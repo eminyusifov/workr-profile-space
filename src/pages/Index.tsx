@@ -224,22 +224,30 @@ const Index = () => {
             <div className="w-2 h-2 bg-blue-600 rounded-full" />
             <span className="text-xs">ƏSAS</span>
           </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-6 h-1 bg-gray-300 rounded" />
-            <span className="text-xs">KATALOQ</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 border-2 border-gray-300 rounded" />
-            <span className="text-xs">ELAN</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 bg-gray-300 rounded" />
-            <span className="text-xs">BLAQQ</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 bg-gray-300 rounded-full" />
-            <span className="text-xs">PROFİL</span>
-          </Button>
+          <Link to="/catalog">
+            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
+              <div className="w-6 h-1 bg-gray-300 rounded" />
+              <span className="text-xs">KATALOQ</span>
+            </Button>
+          </Link>
+          <Link to="/announcements">
+            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
+              <div className="w-4 h-4 border-2 border-gray-300 rounded" />
+              <span className="text-xs">ELAN</span>
+            </Button>
+          </Link>
+          <Link to="/blog">
+            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
+              <div className="w-4 h-4 bg-gray-300 rounded" />
+              <span className="text-xs">BLAQQ</span>
+            </Button>
+          </Link>
+          <Link to="/profile">
+            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
+              <div className="w-4 h-4 bg-gray-300 rounded-full" />
+              <span className="text-xs">PROFİL</span>
+            </Button>
+          </Link>
         </div>
       </nav>
     </div>
