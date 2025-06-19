@@ -20,12 +20,26 @@ interface PortfolioWork {
   };
 }
 
+interface EnhancedPortfolioWork {
+  id: number;
+  title: string;
+  category: string;
+  likes: number;
+  description: string;
+  tags: string[];
+  author: {
+    name: string;
+    avatar: string;
+    rating: number;
+  };
+}
+
 interface PortfolioTabProps {
   portfolio: PortfolioWork[];
 }
 
 const PortfolioTab = ({ portfolio }: PortfolioTabProps) => {
-  const [selectedWork, setSelectedWork] = useState<PortfolioWork | null>(null);
+  const [selectedWork, setSelectedWork] = useState<EnhancedPortfolioWork | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
 
   const toggleFavorite = (workId: number) => {
@@ -37,7 +51,7 @@ const PortfolioTab = ({ portfolio }: PortfolioTabProps) => {
   };
 
   const handleWorkClick = (work: PortfolioWork) => {
-    const enhancedWork = {
+    const enhancedWork: EnhancedPortfolioWork = {
       ...work,
       description: work.description || `This is a detailed description of ${work.title}. It showcases advanced design techniques and modern approaches to ${work.category.toLowerCase()}.`,
       tags: work.tags || ["Design", "Creative", "Modern"],
