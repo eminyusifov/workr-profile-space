@@ -172,10 +172,10 @@ const Catalog = () => {
               <span className="text-xs">ELAN</span>
             </Button>
           </Link>
-          <Link to="/blog">
+          <Link to="/messages">
             <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
               <div className="w-4 h-4 bg-gray-300 rounded" />
-              <span className="text-xs">BLAQQ</span>
+              <span className="text-xs">MESAJ</span>
             </Button>
           </Link>
           <Link to="/profile">
