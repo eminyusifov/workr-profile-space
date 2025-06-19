@@ -1,35 +1,73 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Star, Heart, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import FilterSection from "@/components/catalog/FilterSection";
+import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Catalog = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [filters, setFilters] = useState({});
 
-  const categories = [
-    { name: "Graphic Design", count: 124 },
-    { name: "UX/UI Design", count: 89 },
-    { name: "Photography", count: 156 },
-    { name: "Social Media Marketing", count: 78 },
-    { name: "Animation", count: 45 },
-    { name: "Web Development", count: 92 },
-    { name: "Content Writing", count: 67 },
-    { name: "Video Editing", count: 83 },
+  // Mock specialists data
+  const specialists = [
+    {
+      id: 1,
+      name: "S. Atayev",
+      username: "@s.atayev",
+      rating: 4.9,
+      reviews: 67,
+      category: "UX/UI Design",
+      price: "800$ +",
+      status: "Free",
+      workStatus: "Freelance",
+      languages: ["AZ", "EN", "RU"],
+      tools: ["Figma", "Sketch"],
+      avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      completedProjects: 45,
+      responseTime: "2 hours"
+    },
+    {
+      id: 2,
+      name: "Sarah Chen",
+      username: "@sarahchen",
+      rating: 4.8,
+      reviews: 89,
+      category: "Graphic Design",
+      price: "600$ +",
+      status: "Busy",
+      workStatus: "Working",
+      languages: ["EN", "RU"],
+      tools: ["Photoshop", "Illustrator"],
+      avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      completedProjects: 78,
+      responseTime: "4 hours"
+    },
+    {
+      id: 3,
+      name: "Alex Rodriguez",
+      username: "@alexdesigns",
+      rating: 4.7,
+      reviews: 123,
+      category: "Web Development",
+      price: "1200$ +",
+      status: "Free",
+      workStatus: "Freelance",
+      languages: ["EN", "AZ"],
+      tools: ["React", "Vue"],
+      avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      completedProjects: 92,
+      responseTime: "1 hour"
+    }
   ];
 
-  const toggleFilter = (filter: string) => {
-    setSelectedFilters(prev => 
-      prev.includes(filter) 
-        ? prev.filter(f => f !== filter)
-        : [...prev, filter]
-    );
-  };
+  const sortedSpecialists = showLeaderboard 
+    ? [...specialists].sort((a, b) => b.rating - a.rating)
+    : specialists;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -39,153 +77,132 @@ const Catalog = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link to="/">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  workr
-                </h1>
+                <Button variant="ghost" size="sm">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
               </Link>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                workr
+              </h1>
               <span className="text-gray-400">|</span>
-              <h2 className="text-lg font-semibold text-gray-900">Catalog</h2>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="h-4 w-4" />
-              </Button>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {showLeaderboard ? "Leaderboard" : "Catalog"}
+              </h2>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Search and Filters */}
-      <section className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Search categories, services..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12"
-              />
-            </div>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Filter className="h-4 w-4" />
-              <span>Filters</span>
-            </Button>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <FilterSection 
+          onFiltersChange={setFilters}
+          showLeaderboard={showLeaderboard}
+          onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
+        />
 
-          {/* Active Filters */}
-          {selectedFilters.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {selectedFilters.map((filter) => (
-                <Badge
-                  key={filter}
-                  variant="secondary"
-                  className="cursor-pointer"
-                  onClick={() => toggleFilter(filter)}
-                >
-                  {filter} ×
-                </Badge>
-              ))}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedFilters([])}
-                className="text-sm text-gray-500"
-              >
-                Clear all
-              </Button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Categories Grid */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">
-              Service Categories
-            </h3>
-            <span className="text-gray-500">{categories.length} categories</span>
-          </div>
-
-          <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}>
-            {categories.map((category) => (
-              <Card
-                key={category.name}
-                className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/70 backdrop-blur-sm border-0 shadow-md cursor-pointer"
-                onClick={() => toggleFilter(category.name)}
-              >
-                <CardContent className="p-6">
+        {/* Specialists Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedSpecialists.map((specialist, index) => (
+            <Card key={specialist.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <CardContent className="p-6">
+                {showLeaderboard && (
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xl font-bold">
-                        {category.name.charAt(0)}
+                    <Badge variant="secondary" className="text-lg font-bold">
+                      #{index + 1}
+                    </Badge>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold">{specialist.rating}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex items-start space-x-4 mb-4">
+                  <Link to={`/specialist/${specialist.id}`}>
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={specialist.avatar} />
+                      <AvatarFallback>{specialist.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                  <div className="flex-1">
+                    <Link to={`/specialist/${specialist.id}`}>
+                      <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                        {specialist.name}
+                      </h3>
+                    </Link>
+                    <p className="text-gray-600 text-sm">{specialist.username}</p>
+                    <div className="flex items-center space-x-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(specialist.rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-sm text-gray-600 ml-1">
+                        {specialist.rating} ({specialist.reviews})
                       </span>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {category.count} specialists
-                    </Badge>
                   </div>
-                  <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
-                    {category.name}
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Find skilled professionals in {category.name.toLowerCase()}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+                  <div className="flex items-center space-x-1">
+                    <div className={`w-3 h-3 rounded-full ${
+                      specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
+                    }`} />
+                    <span className="text-sm text-gray-600">{specialist.status}</span>
+                  </div>
+                </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 px-4 py-3">
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded" />
-              <span className="text-xs">ƏSAS</span>
-            </Button>
-          </Link>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-blue-600">
-            <div className="w-6 h-1 bg-blue-600 rounded" />
-            <span className="text-xs">KATALOQ</span>
-          </Button>
-          <Link to="/announcements">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 border-2 border-gray-300 rounded" />
-              <span className="text-xs">ELAN</span>
-            </Button>
-          </Link>
-          <Link to="/messages">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded" />
-              <span className="text-xs">MESAJ</span>
-            </Button>
-          </Link>
-          <Link to="/profile">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded-full" />
-              <span className="text-xs">PROFİL</span>
-            </Button>
-          </Link>
+                <div className="space-y-3">
+                  <div>
+                    <Badge variant="outline">{specialist.category}</Badge>
+                    <Badge variant="secondary" className="ml-2">{specialist.workStatus}</Badge>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Languages:</p>
+                    <div className="flex space-x-1">
+                      {specialist.languages.map(lang => (
+                        <Badge key={lang} variant="outline" className="text-xs">{lang}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Tools:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {specialist.tools.map(tool => (
+                        <Badge key={tool} variant="outline" className="text-xs">{tool}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span>{specialist.completedProjects} projects</span>
+                    <span>Response: {specialist.responseTime}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t">
+                    <span className="font-semibold text-gray-900">{specialist.price}</span>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Link to={`/specialist/${specialist.id}`}>
+                        <Button size="sm">View Profile</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </nav>
+      </div>
+
+      <BottomNavigation activeTab="catalog" />
     </div>
   );
 };

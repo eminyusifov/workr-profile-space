@@ -1,0 +1,169 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Search, Filter, Star } from "lucide-react";
+
+interface FilterSectionProps {
+  onFiltersChange: (filters: any) => void;
+  showLeaderboard: boolean;
+  onToggleLeaderboard: () => void;
+}
+
+const FilterSection = ({ onFiltersChange, showLeaderboard, onToggleLeaderboard }: FilterSectionProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [workStatus, setWorkStatus] = useState("");
+  const [availability, setAvailability] = useState("");
+
+  const categories = ["UX/UI Design", "Graphic Design", "Web Development", "Mobile Development", "Branding", "Photography"];
+  const languages = ["AZ", "RU", "EN", "TR"];
+  const tools = ["Figma", "Photoshop", "Sketch", "React", "Vue", "Angular"];
+  const workStatuses = ["Working", "Not Working", "Freelance"];
+  const availabilityOptions = ["Free", "Busy", "Available Soon"];
+
+  const toggleLanguage = (language: string) => {
+    const updated = selectedLanguages.includes(language)
+      ? selectedLanguages.filter(l => l !== language)
+      : [...selectedLanguages, language];
+    setSelectedLanguages(updated);
+    onFiltersChange({ searchQuery, selectedCategory, selectedLanguages: updated, selectedTools, workStatus, availability });
+  };
+
+  const toggleTool = (tool: string) => {
+    const updated = selectedTools.includes(tool)
+      ? selectedTools.filter(t => t !== tool)
+      : [...selectedTools, tool];
+    setSelectedTools(updated);
+    onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools: updated, workStatus, availability });
+  };
+
+  return (
+    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        <Button
+          variant={showLeaderboard ? "default" : "outline"}
+          onClick={onToggleLeaderboard}
+          className="flex items-center space-x-2"
+        >
+          <Star className="h-4 w-4" />
+          <span>Leaderboard</span>
+        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Input
+          type="text"
+          placeholder="Search specialists..."
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            onFiltersChange({ searchQuery: e.target.value, selectedCategory, selectedLanguages, selectedTools, workStatus, availability });
+          }}
+          className="pl-10"
+        />
+      </div>
+
+      {/* Category */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+        <Select value={selectedCategory} onValueChange={(value) => {
+          setSelectedCategory(value);
+          onFiltersChange({ searchQuery, selectedCategory: value, selectedLanguages, selectedTools, workStatus, availability });
+        }}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Categories</SelectItem>
+            {categories.map(category => (
+              <SelectItem key={category} value={category}>{category}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Languages */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Languages</label>
+        <div className="flex flex-wrap gap-2">
+          {languages.map(language => (
+            <Badge
+              key={language}
+              variant={selectedLanguages.includes(language) ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => toggleLanguage(language)}
+            >
+              {language}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Tools */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Tools</label>
+        <div className="flex flex-wrap gap-2">
+          {tools.map(tool => (
+            <Badge
+              key={tool}
+              variant={selectedTools.includes(tool) ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => toggleTool(tool)}
+            >
+              {tool}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Work Status & Availability */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Work Status</label>
+          <Select value={workStatus} onValueChange={(value) => {
+            setWorkStatus(value);
+            onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus: value, availability });
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Any status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Any Status</SelectItem>
+              {workStatuses.map(status => (
+                <SelectItem key={status} value={status}>{status}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+          <Select value={availability} onValueChange={(value) => {
+            setAvailability(value);
+            onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus, availability: value });
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Any availability" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Any Availability</SelectItem>
+              {availabilityOptions.map(option => (
+                <SelectItem key={option} value={option}>{option}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FilterSection;

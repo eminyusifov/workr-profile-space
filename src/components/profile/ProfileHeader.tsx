@@ -1,8 +1,9 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings, Edit, Share, Heart, Eye, Star } from "lucide-react";
+import { Edit, Heart, Eye, Star, UserPlus } from "lucide-react";
 
 interface User {
   name: string;
@@ -24,9 +25,13 @@ interface User {
 
 interface ProfileHeaderProps {
   user: User;
+  isOwnProfile?: boolean;
 }
 
-const ProfileHeader = ({ user }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user, isOwnProfile = true }: ProfileHeaderProps) => {
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
+
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg border-0 p-8 mb-8">
       {/* Cover Image */}
@@ -73,10 +78,31 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
         </div>
         
         <div className="flex space-x-2">
-          <Button variant="outline" className="flex items-center space-x-2">
-            <Edit className="h-4 w-4" />
-            <span>Edit Profile</span>
-          </Button>
+          {isOwnProfile ? (
+            <Button variant="outline" className="flex items-center space-x-2">
+              <Edit className="h-4 w-4" />
+              <span>Edit Profile</span>
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant={isFavorited ? "default" : "outline"}
+                onClick={() => setIsFavorited(!isFavorited)}
+                className="flex items-center space-x-2"
+              >
+                <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+                <span>{isFavorited ? 'Favorited' : 'Favorite'}</span>
+              </Button>
+              <Button
+                variant={isFriend ? "default" : "outline"}
+                onClick={() => setIsFriend(!isFriend)}
+                className="flex items-center space-x-2"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>{isFriend ? 'Friends' : 'Add Friend'}</span>
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
