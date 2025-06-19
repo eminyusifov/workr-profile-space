@@ -7,11 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Heart, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import FilterSection from "@/components/catalog/FilterSection";
+import ReelsSection from "@/components/messages/ReelsSection";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Catalog = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [filters, setFilters] = useState({});
+
+  // Mock reels data
+  const reels = [
+    {
+      id: 1,
+      user: { name: "Sarah Chen", username: "@sarahchen", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "Logo Design Process"
+    },
+    {
+      id: 2,
+      user: { name: "Alex Rodriguez", username: "@alexdesigns", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "UI Animation"
+    },
+    {
+      id: 3,
+      user: { name: "Maya Patel", username: "@mayacreates", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "Brand Identity"
+    }
+  ];
 
   // Mock specialists data
   const specialists = [
@@ -92,6 +115,9 @@ const Catalog = () => {
           </div>
         </div>
       </header>
+
+      {/* Reels Section */}
+      <ReelsSection reels={reels} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <FilterSection 
