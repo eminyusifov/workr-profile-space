@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Heart, Users, Play } from "lucide-react";
+import { Search, Heart, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import ReelsSection from "@/components/messages/ReelsSection";
+import ConversationsList from "@/components/messages/ConversationsList";
+import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,32 +75,7 @@ const Messages = () => {
         </div>
       </header>
 
-      {/* Reels Section */}
-      <section className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Latest Work</h3>
-          <div className="flex space-x-4 overflow-x-auto pb-4">
-            {reels.map((reel) => (
-              <div key={reel.id} className="flex-shrink-0 w-24">
-                <div className="relative mb-2">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 p-0.5">
-                    <div className="w-full h-full rounded-full bg-white p-1">
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center relative overflow-hidden">
-                        <Play className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <Link to={`/specialist/${reel.user.username.slice(1)}`}>
-                  <p className="text-xs text-center text-gray-700 font-medium truncate">
-                    {reel.user.name.split(' ')[0]}
-                  </p>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ReelsSection reels={reels} />
 
       {/* Tabs */}
       <section className="px-4 sm:px-6 lg:px-8 mb-6">
@@ -141,71 +116,9 @@ const Messages = () => {
         </div>
       </section>
 
-      {/* Conversations */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="space-y-4">
-            {conversations.map((conversation) => (
-              <Card key={conversation.id} className="hover:shadow-lg transition-all duration-300 bg-white/70 backdrop-blur-sm border-0 shadow-md cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={conversation.user.avatar} />
-                      <AvatarFallback>{conversation.user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900">{conversation.user.name}</h4>
-                        <span className="text-sm text-gray-500">{conversation.timestamp}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{conversation.lastMessage}</p>
-                    </div>
-                    {conversation.unread > 0 && (
-                      <Badge className="bg-blue-600 text-white">
-                        {conversation.unread}
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ConversationsList conversations={conversations} />
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 px-4 py-3">
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded" />
-              <span className="text-xs">ƏSAS</span>
-            </Button>
-          </Link>
-          <Link to="/catalog">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-6 h-1 bg-gray-300 rounded" />
-              <span className="text-xs">KATALOQ</span>
-            </Button>
-          </Link>
-          <Link to="/announcements">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 border-2 border-gray-300 rounded" />
-              <span className="text-xs">ELAN</span>
-            </Button>
-          </Link>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-blue-600">
-            <div className="w-4 h-4 bg-blue-600 rounded" />
-            <span className="text-xs">MESAJ</span>
-          </Button>
-          <Link to="/profile">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded-full" />
-              <span className="text-xs">PROFİL</span>
-            </Button>
-          </Link>
-        </div>
-      </nav>
+      <BottomNavigation activeTab="messages" />
     </div>
   );
 };
