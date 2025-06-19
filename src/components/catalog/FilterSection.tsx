@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Star } from "lucide-react";
+import { Search, Star } from "lucide-react";
 
 interface FilterSectionProps {
   onFiltersChange: (filters: any) => void;
@@ -42,6 +42,24 @@ const FilterSection = ({ onFiltersChange, showLeaderboard, onToggleLeaderboard }
     onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools: updated, workStatus, availability });
   };
 
+  const handleCategoryChange = (value: string) => {
+    const newCategory = value === "all" ? "" : value;
+    setSelectedCategory(newCategory);
+    onFiltersChange({ searchQuery, selectedCategory: newCategory, selectedLanguages, selectedTools, workStatus, availability });
+  };
+
+  const handleWorkStatusChange = (value: string) => {
+    const newStatus = value === "all" ? "" : value;
+    setWorkStatus(newStatus);
+    onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus: newStatus, availability });
+  };
+
+  const handleAvailabilityChange = (value: string) => {
+    const newAvailability = value === "all" ? "" : value;
+    setAvailability(newAvailability);
+    onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus, availability: newAvailability });
+  };
+
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -74,15 +92,12 @@ const FilterSection = ({ onFiltersChange, showLeaderboard, onToggleLeaderboard }
       {/* Category */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-        <Select value={selectedCategory} onValueChange={(value) => {
-          setSelectedCategory(value);
-          onFiltersChange({ searchQuery, selectedCategory: value, selectedLanguages, selectedTools, workStatus, availability });
-        }}>
+        <Select value={selectedCategory || "all"} onValueChange={handleCategoryChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {categories.map(category => (
               <SelectItem key={category} value={category}>{category}</SelectItem>
             ))}
@@ -128,15 +143,12 @@ const FilterSection = ({ onFiltersChange, showLeaderboard, onToggleLeaderboard }
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Work Status</label>
-          <Select value={workStatus} onValueChange={(value) => {
-            setWorkStatus(value);
-            onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus: value, availability });
-          }}>
+          <Select value={workStatus || "all"} onValueChange={handleWorkStatusChange}>
             <SelectTrigger>
               <SelectValue placeholder="Any status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any Status</SelectItem>
+              <SelectItem value="all">Any Status</SelectItem>
               {workStatuses.map(status => (
                 <SelectItem key={status} value={status}>{status}</SelectItem>
               ))}
@@ -146,15 +158,12 @@ const FilterSection = ({ onFiltersChange, showLeaderboard, onToggleLeaderboard }
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-          <Select value={availability} onValueChange={(value) => {
-            setAvailability(value);
-            onFiltersChange({ searchQuery, selectedCategory, selectedLanguages, selectedTools, workStatus, availability: value });
-          }}>
+          <Select value={availability || "all"} onValueChange={handleAvailabilityChange}>
             <SelectTrigger>
               <SelectValue placeholder="Any availability" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any Availability</SelectItem>
+              <SelectItem value="all">Any Availability</SelectItem>
               {availabilityOptions.map(option => (
                 <SelectItem key={option} value={option}>{option}</SelectItem>
               ))}

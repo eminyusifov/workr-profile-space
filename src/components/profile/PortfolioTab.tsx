@@ -13,6 +13,11 @@ interface PortfolioWork {
   likes: number;
   description?: string;
   tags?: string[];
+  author?: {
+    name: string;
+    avatar: string;
+    rating: number;
+  };
 }
 
 interface PortfolioTabProps {
@@ -36,7 +41,7 @@ const PortfolioTab = ({ portfolio }: PortfolioTabProps) => {
       ...work,
       description: work.description || `This is a detailed description of ${work.title}. It showcases advanced design techniques and modern approaches to ${work.category.toLowerCase()}.`,
       tags: work.tags || ["Design", "Creative", "Modern"],
-      author: {
+      author: work.author || {
         name: "John Smith",
         avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
         rating: 4.9
