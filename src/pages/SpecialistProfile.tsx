@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Heart, ChevronLeft, Settings } from "lucide-react";
+import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const SpecialistProfile = () => {
   const { id } = useParams();
@@ -195,31 +195,7 @@ const SpecialistProfile = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 px-4 py-3">
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 bg-gray-300 rounded" />
-            <span className="text-xs">ƏSAS</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-6 h-1 bg-gray-300 rounded" />
-            <span className="text-xs">KATALOQ</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 border-2 border-gray-300 rounded" />
-            <span className="text-xs">ELAN</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 bg-gray-300 rounded" />
-            <span className="text-xs">BLAQQ</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-            <div className="w-4 h-4 bg-gray-300 rounded-full" />
-            <span className="text-xs">PROFİL</span>
-          </Button>
-        </div>
-      </nav>
+      <BottomNavigation activeTab="catalog" />
     </div>
   );
 };

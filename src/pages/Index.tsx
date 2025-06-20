@@ -174,7 +174,7 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSpecialists.map((specialist) => (
-              <Link key={specialist.id} to={`/profile`}>
+              <Link key={specialist.id} to={`/specialist/${specialist.id}`}>
                 <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">

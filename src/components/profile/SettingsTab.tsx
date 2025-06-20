@@ -2,7 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-const SettingsTab = () => {
+interface SettingsTabProps {
+  onEditProfile?: () => void;
+}
+
+const SettingsTab = ({ onEditProfile }: SettingsTabProps) => {
+  const handleManagePrivacy = () => {
+    console.log("Managing privacy settings...");
+    alert("Privacy settings functionality coming soon!");
+  };
+
+  const handleConfigureNotifications = () => {
+    console.log("Configuring notifications...");
+    alert("Notification settings functionality coming soon!");
+  };
+
   return (
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-6">Account Settings</h3>
@@ -11,7 +25,7 @@ const SettingsTab = () => {
           <CardContent className="p-6">
             <h4 className="font-medium text-gray-900 mb-2">Profile Information</h4>
             <p className="text-sm text-gray-600 mb-4">Update your account details and preferences.</p>
-            <Button variant="outline">Edit Profile</Button>
+            <Button variant="outline" onClick={onEditProfile}>Edit Profile</Button>
           </CardContent>
         </Card>
         
@@ -19,7 +33,7 @@ const SettingsTab = () => {
           <CardContent className="p-6">
             <h4 className="font-medium text-gray-900 mb-2">Privacy Settings</h4>
             <p className="text-sm text-gray-600 mb-4">Control who can see your profile and portfolio.</p>
-            <Button variant="outline">Manage Privacy</Button>
+            <Button variant="outline" onClick={handleManagePrivacy}>Manage Privacy</Button>
           </CardContent>
         </Card>
         
@@ -27,7 +41,7 @@ const SettingsTab = () => {
           <CardContent className="p-6">
             <h4 className="font-medium text-gray-900 mb-2">Notifications</h4>
             <p className="text-sm text-gray-600 mb-4">Choose what notifications you want to receive.</p>
-            <Button variant="outline">Configure</Button>
+            <Button variant="outline" onClick={handleConfigureNotifications}>Configure</Button>
           </CardContent>
         </Card>
       </div>

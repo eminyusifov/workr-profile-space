@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Edit, Heart, Eye, Star, UserPlus } from "lucide-react";
+import { Edit, Heart, Eye, Star, UserPlus, Share } from "lucide-react";
 
 interface User {
   name: string;
@@ -26,9 +26,11 @@ interface User {
 interface ProfileHeaderProps {
   user: User;
   isOwnProfile?: boolean;
+  onEditProfile?: () => void;
+  onShareProfile?: () => void;
 }
 
-const ProfileHeader = ({ user, isOwnProfile = true }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user, isOwnProfile = true, onEditProfile, onShareProfile }: ProfileHeaderProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
 
@@ -79,10 +81,16 @@ const ProfileHeader = ({ user, isOwnProfile = true }: ProfileHeaderProps) => {
         
         <div className="flex space-x-2">
           {isOwnProfile ? (
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Edit className="h-4 w-4" />
-              <span>Edit Profile</span>
-            </Button>
+            <>
+              <Button variant="outline" onClick={onEditProfile} className="flex items-center space-x-2">
+                <Edit className="h-4 w-4" />
+                <span>Edit Profile</span>
+              </Button>
+              <Button variant="outline" onClick={onShareProfile} className="flex items-center space-x-2">
+                <Share className="h-4 w-4" />
+                <span>Share</span>
+              </Button>
+            </>
           ) : (
             <>
               <Button
@@ -100,6 +108,10 @@ const ProfileHeader = ({ user, isOwnProfile = true }: ProfileHeaderProps) => {
               >
                 <UserPlus className="h-4 w-4" />
                 <span>{isFriend ? 'Friends' : 'Add Friend'}</span>
+              </Button>
+              <Button variant="outline" onClick={onShareProfile} className="flex items-center space-x-2">
+                <Share className="h-4 w-4" />
+                <span>Share</span>
               </Button>
             </>
           )}

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Share, ChevronLeft, Edit } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import PortfolioTab from "@/components/profile/PortfolioTab";
@@ -42,17 +42,26 @@ const Profile = () => {
   };
 
   const handleEditProfile = () => {
-    console.log("Edit profile clicked");
     setIsEditModalOpen(true);
   };
 
   const handleShareProfile = () => {
-    console.log("Share profile clicked");
-    navigator.share?.({
-      title: `${user.name} - workr Profile`,
-      text: user.bio,
-      url: window.location.href
-    }) || alert("Profile link copied to clipboard!");
+    // Fallback to copying URL to clipboard if native share is not available
+    if (navigator.share && navigator.canShare) {
+      navigator.share({
+        title: `${user.name} - workr Profile`,
+        text: user.bio,
+        url: window.location.href
+      }).catch(() => {
+        // Fallback to clipboard
+        navigator.clipboard.writeText(window.location.href);
+        alert("Profile link copied to clipboard!");
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(window.location.href);
+      alert("Profile link copied to clipboard!");
+    }
   };
 
   return (
@@ -73,23 +82,17 @@ const Profile = () => {
               <span className="text-gray-400">|</span>
               <h2 className="text-lg font-semibold text-gray-900">Profile</h2>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" onClick={handleShareProfile}>
-                <Share className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleEditProfile}>
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProfileHeader user={user} />
+        <ProfileHeader 
+          user={user} 
+          isOwnProfile={true}
+          onEditProfile={handleEditProfile}
+          onShareProfile={handleShareProfile}
+        />
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -108,7 +111,7 @@ const Profile = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <SettingsTab />
+            <SettingsTab onEditProfile={handleEditProfile} />
           </TabsContent>
         </Tabs>
       </div>
