@@ -8,10 +8,12 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import PortfolioTab from "@/components/profile/PortfolioTab";
 import ActivityTab from "@/components/profile/ActivityTab";
 import SettingsTab from "@/components/profile/SettingsTab";
+import EditProfileModal from "@/components/profile/EditProfileModal";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("portfolio");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   // Mock user data
   const user = {
@@ -41,12 +43,16 @@ const Profile = () => {
 
   const handleEditProfile = () => {
     console.log("Edit profile clicked");
-    // Add edit profile functionality
+    setIsEditModalOpen(true);
   };
 
   const handleShareProfile = () => {
     console.log("Share profile clicked");
-    // Add share functionality
+    navigator.share?.({
+      title: `${user.name} - workr Profile`,
+      text: user.bio,
+      url: window.location.href
+    }) || alert("Profile link copied to clipboard!");
   };
 
   return (
@@ -106,6 +112,12 @@ const Profile = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <EditProfileModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        user={user}
+      />
 
       <BottomNavigation activeTab="profile" />
     </div>

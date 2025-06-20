@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Search, Heart, Users, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import ConversationsList from "@/components/messages/ConversationsList";
+import ChatModal from "@/components/messages/ChatModal";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("messages");
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const conversations = [
     {
@@ -38,6 +41,12 @@ const Messages = () => {
   const filteredConversations = conversations.filter(conversation =>
     conversation.user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleConversationClick = (conversation) => {
+    console.log("Opening conversation with:", conversation.user.name);
+    setSelectedConversation(conversation);
+    setIsChatModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -106,7 +115,16 @@ const Messages = () => {
         </div>
       </section>
 
-      <ConversationsList conversations={filteredConversations} />
+      <ConversationsList 
+        conversations={filteredConversations} 
+        onConversationClick={handleConversationClick}
+      />
+
+      <ChatModal 
+        conversation={selectedConversation}
+        isOpen={isChatModalOpen}
+        onClose={() => setIsChatModalOpen(false)}
+      />
 
       <BottomNavigation activeTab="messages" />
     </div>

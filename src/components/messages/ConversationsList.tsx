@@ -13,15 +13,20 @@ interface Conversation {
 
 interface ConversationsListProps {
   conversations: Conversation[];
+  onConversationClick?: (conversation: Conversation) => void;
 }
 
-const ConversationsList = ({ conversations }: ConversationsListProps) => {
+const ConversationsList = ({ conversations, onConversationClick }: ConversationsListProps) => {
   return (
     <section className="px-4 sm:px-6 lg:px-8 pb-20">
       <div className="max-w-7xl mx-auto">
         <div className="space-y-4">
           {conversations.map((conversation) => (
-            <Card key={conversation.id} className="hover:shadow-lg transition-all duration-300 bg-white/70 backdrop-blur-sm border-0 shadow-md cursor-pointer">
+            <Card 
+              key={conversation.id} 
+              className="hover:shadow-lg transition-all duration-300 bg-white/70 backdrop-blur-sm border-0 shadow-md cursor-pointer"
+              onClick={() => onConversationClick?.(conversation)}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">

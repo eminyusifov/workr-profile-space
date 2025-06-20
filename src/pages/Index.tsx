@@ -103,7 +103,7 @@ const Index = () => {
                 <Settings className="h-4 w-4" />
               </Button>
               <Link to="/profile">
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all">
                   <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
                   <AvatarFallback>JS</AvatarFallback>
                 </Avatar>
@@ -174,7 +174,7 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSpecialists.map((specialist) => (
-              <Link key={specialist.id} to={`/specialist/${specialist.id}`}>
+              <Link key={specialist.id} to={`/profile`}>
                 <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
