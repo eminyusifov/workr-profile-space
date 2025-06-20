@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +6,36 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Heart, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import ReelsSection from "@/components/messages/ReelsSection";
+import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", "Graphic", "UX/UI", "Photo", "SMM", "Animation"];
+  
+  // Mock reels data for main screen
+  const reels = [
+    {
+      id: 1,
+      user: { name: "Sarah Chen", username: "@sarahchen", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "Logo Design Process"
+    },
+    {
+      id: 2,
+      user: { name: "Alex Rodriguez", username: "@alexdesigns", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "UI Animation"
+    },
+    {
+      id: 3,
+      user: { name: "Maya Patel", username: "@mayacreates", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "Brand Identity"
+    }
+  ];
   
   const specialists = [
     {
@@ -79,14 +102,19 @@ const Index = () => {
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
-                <AvatarFallback>JS</AvatarFallback>
-              </Avatar>
+              <Link to="/profile">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
+                  <AvatarFallback>JS</AvatarFallback>
+                </Avatar>
+              </Link>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Reels Section */}
+      <ReelsSection reels={reels} />
 
       {/* Hero Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
@@ -217,39 +245,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 px-4 py-3">
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-blue-600">
-            <div className="w-2 h-2 bg-blue-600 rounded-full" />
-            <span className="text-xs">ƏSAS</span>
-          </Button>
-          <Link to="/catalog">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-6 h-1 bg-gray-300 rounded" />
-              <span className="text-xs">KATALOQ</span>
-            </Button>
-          </Link>
-          <Link to="/announcements">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 border-2 border-gray-300 rounded" />
-              <span className="text-xs">ELAN</span>
-            </Button>
-          </Link>
-          <Link to="/messages">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded" />
-              <span className="text-xs">MESAJ</span>
-            </Button>
-          </Link>
-          <Link to="/profile">
-            <Button variant="ghost" size="sm" className="flex flex-col items-center space-y-1 text-gray-500">
-              <div className="w-4 h-4 bg-gray-300 rounded-full" />
-              <span className="text-xs">PROFİL</span>
-            </Button>
-          </Link>
-        </div>
-      </nav>
+      <BottomNavigation activeTab="main" />
     </div>
   );
 };

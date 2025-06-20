@@ -2,36 +2,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Heart, Users } from "lucide-react";
+import { Search, Heart, Users, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import ReelsSection from "@/components/messages/ReelsSection";
 import ConversationsList from "@/components/messages/ConversationsList";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("messages");
-
-  const reels = [
-    {
-      id: 1,
-      user: { name: "Sarah Chen", username: "@sarahchen", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
-      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
-      title: "Logo Design Process"
-    },
-    {
-      id: 2,
-      user: { name: "Alex Rodriguez", username: "@alexdesigns", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
-      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
-      title: "UI Animation"
-    },
-    {
-      id: 3,
-      user: { name: "Maya Patel", username: "@mayacreates", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
-      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
-      title: "Brand Identity"
-    }
-  ];
 
   const conversations = [
     {
@@ -47,8 +25,19 @@ const Messages = () => {
       lastMessage: "When can we start the project?",
       timestamp: "1 hour ago",
       unread: 0
+    },
+    {
+      id: 3,
+      user: { name: "Mike Johnson", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      lastMessage: "The logo looks perfect!",
+      timestamp: "3 hours ago",
+      unread: 1
     }
   ];
+
+  const filteredConversations = conversations.filter(conversation =>
+    conversation.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -58,10 +47,13 @@ const Messages = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link to="/">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  workr
-                </h1>
+                <Button variant="ghost" size="sm">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
               </Link>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                workr
+              </h1>
               <span className="text-gray-400">|</span>
               <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
             </div>
@@ -75,10 +67,8 @@ const Messages = () => {
         </div>
       </header>
 
-      <ReelsSection reels={reels} />
-
       {/* Tabs */}
-      <section className="px-4 sm:px-6 lg:px-8 mb-6">
+      <section className="px-4 sm:px-6 lg:px-8 mb-6 pt-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex space-x-4">
             <Button
@@ -116,7 +106,7 @@ const Messages = () => {
         </div>
       </section>
 
-      <ConversationsList conversations={conversations} />
+      <ConversationsList conversations={filteredConversations} />
 
       <BottomNavigation activeTab="messages" />
     </div>

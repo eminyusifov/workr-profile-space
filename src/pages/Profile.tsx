@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Share } from "lucide-react";
+import { Settings, Share, ChevronLeft, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import PortfolioTab from "@/components/profile/PortfolioTab";
@@ -11,6 +11,8 @@ import SettingsTab from "@/components/profile/SettingsTab";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const Profile = () => {
+  const [activeTab, setActiveTab] = useState("portfolio");
+  
   // Mock user data
   const user = {
     name: "John Smith",
@@ -37,6 +39,16 @@ const Profile = () => {
     ]
   };
 
+  const handleEditProfile = () => {
+    console.log("Edit profile clicked");
+    // Add edit profile functionality
+  };
+
+  const handleShareProfile = () => {
+    console.log("Share profile clicked");
+    // Add share functionality
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header */}
@@ -45,16 +57,22 @@ const Profile = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link to="/">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  workr
-                </h1>
+                <Button variant="ghost" size="sm">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
               </Link>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                workr
+              </h1>
               <span className="text-gray-400">|</span>
               <h2 className="text-lg font-semibold text-gray-900">Profile</h2>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" onClick={handleShareProfile}>
                 <Share className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleEditProfile}>
+                <Edit className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
@@ -68,7 +86,7 @@ const Profile = () => {
         <ProfileHeader user={user} />
 
         {/* Tabs */}
-        <Tabs defaultValue="portfolio" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
