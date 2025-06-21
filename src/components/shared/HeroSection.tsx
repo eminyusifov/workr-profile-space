@@ -1,8 +1,9 @@
 
 import { Input } from "@/components/ui/input";
+import { ReactNode } from "react";
 
 interface HeroSectionProps {
-  title: string;
+  title: string | ReactNode;
   subtitle: string;
   searchPlaceholder?: string;
   searchValue?: string;
