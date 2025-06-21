@@ -1,16 +1,19 @@
+
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Heart, ChevronLeft, Settings } from "lucide-react";
+import { Star, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const SpecialistProfile = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("info");
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Mock data - in real app, this would come from API
   const specialist = {
@@ -33,37 +36,30 @@ const SpecialistProfile = () => {
     ]
   };
 
+  const rightContent = (
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      className={`hover:bg-red-50 hover:text-red-600 ${isFavorited ? 'text-red-600' : ''}`}
+      onClick={() => setIsFavorited(!isFavorited)}
+    >
+      <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+    </Button>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </Link>
-              <h1 className="text-xl font-semibold text-gray-900">{specialist.name}</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
-                <Heart className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title={specialist.name}
+        showBackButton
+        rightContent={rightContent}
+      />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Header */}
         <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg border-0 p-8 mb-8">
           <div className="flex items-start space-x-6 mb-6">
-            <Avatar className="h-20 w-20">
+            <Avatar className="h-20 w-20 ring-4 ring-white shadow-lg">
               <AvatarImage src={specialist.avatar} />
               <AvatarFallback>{specialist.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
@@ -83,87 +79,70 @@ const SpecialistProfile = () => {
                     />
                   ))}
                   <span className="text-sm font-medium ml-2">
-                    Rating: {specialist.rating}
+                    {specialist.rating} ({specialist.reviews} reviews)
                   </span>
                 </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
+                }`} />
+                <span className="text-sm text-gray-600">{specialist.status}</span>
+                <span className="text-lg font-bold text-gray-900 ml-4">{specialist.price}</span>
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="info" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="info" className="text-sm font-medium">Info</TabsTrigger>
               <TabsTrigger value="works" className="text-sm font-medium">Works</TabsTrigger>
             </TabsList>
 
             <TabsContent value="info" className="space-y-6">
-              {/* Status */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Status</h3>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <span className="text-gray-700">{specialist.status}</span>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Rate ({specialist.rating})</h3>
-                <div className="flex items-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-6 w-6 ${
-                        i < Math.floor(specialist.rating)
-                          ? "fill-blue-500 text-blue-500"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
               {/* Skills */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Skills</h3>
-                <p className="text-gray-700">{specialist.skills}</p>
+                <div className="flex flex-wrap gap-2">
+                  {specialist.skills.split(', ').map((skill) => (
+                    <Badge key={skill} variant="secondary">{skill}</Badge>
+                  ))}
+                </div>
               </div>
 
               {/* Tools */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Tools</h3>
-                <p className="text-gray-700">{specialist.tools}</p>
+                <div className="flex flex-wrap gap-2">
+                  {specialist.tools.split(', ').map((tool) => (
+                    <Badge key={tool} variant="outline">{tool}</Badge>
+                  ))}
+                </div>
               </div>
 
               {/* Language */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Language</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Languages</h3>
                 <p className="text-gray-700">{specialist.languages}</p>
               </div>
 
               {/* Workspace */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Workspace</h3>
-                <p className="text-gray-700">{specialist.workspace}</p>
-              </div>
-
-              {/* Money */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Money</h3>
-                <p className="text-gray-700 font-semibold">{specialist.price}</p>
+                <Badge variant="secondary">{specialist.workspace}</Badge>
               </div>
             </TabsContent>
 
             <TabsContent value="works" className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Works</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Portfolio</h3>
                 
                 {/* Filter Tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge variant="secondary" className="bg-gray-600 text-white hover:bg-gray-700">SMM</Badge>
+                  <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
+                  <Badge variant="outline">SMM</Badge>
                   <Badge variant="outline">Graphic</Badge>
-                  <Badge variant="outline">UX/UI</Badge>
                   <Badge variant="outline">UX/UI</Badge>
                   <Badge variant="outline">Photo</Badge>
                 </div>
@@ -176,14 +155,17 @@ const SpecialistProfile = () => {
                         <div className="relative">
                           <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
                             <div className="text-white text-center p-4">
-                              <div className="text-sm opacity-90 mb-2">BOOK COVER</div>
-                              <div className="text-lg font-bold">SAMPLE</div>
+                              <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
+                              <div className="text-lg font-bold">{work.title}</div>
                               <div className="text-xs opacity-75 mt-2">Design Project</div>
                             </div>
                           </div>
                           <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                            {work.progress}
+                            {work.progress} complete
                           </div>
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-medium text-gray-900">{work.title}</h4>
                         </div>
                       </CardContent>
                     </Card>
