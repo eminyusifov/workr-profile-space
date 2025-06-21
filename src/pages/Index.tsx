@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
@@ -8,6 +7,7 @@ import CategoryFilter from "@/components/shared/CategoryFilter";
 import ReelsSection from "@/components/messages/ReelsSection";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SpecialistGrid from "@/components/shared/SpecialistGrid";
+import FloatingActionButton from "@/components/shared/FloatingActionButton";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -125,6 +125,7 @@ const Index = () => {
         title="Artists"
       />
 
+      <FloatingActionButton />
       <BottomNavigation activeTab="main" />
     </div>
   );

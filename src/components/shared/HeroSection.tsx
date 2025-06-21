@@ -1,14 +1,12 @@
 
-import { Input } from "@/components/ui/input";
-import { ReactNode } from "react";
+import EnhancedSearch from "./EnhancedSearch";
 
 interface HeroSectionProps {
-  title: string | ReactNode;
+  title: React.ReactNode;
   subtitle: string;
   searchPlaceholder?: string;
-  searchValue?: string;
-  onSearchChange?: (value: string) => void;
-  showSearch?: boolean;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
   className?: string;
 }
 
@@ -16,46 +14,56 @@ const HeroSection = ({
   title, 
   subtitle, 
   searchPlaceholder = "Search...", 
-  searchValue = "", 
+  searchValue, 
   onSearchChange,
-  showSearch = true,
   className = ""
 }: HeroSectionProps) => {
   return (
-    <section className={`relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden ${className}`}>
-      {/* Background with improved gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl"></div>
-      </div>
+    <section className={`relative py-16 px-4 sm:px-6 lg:px-8 overflow-hidden ${className}`}>
+      {/* Enhanced background with animated elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23000000\" fill-opacity=\"0.02\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
       
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl"></div>
+      {/* Floating geometric shapes */}
+      <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
       
       <div className="relative max-w-4xl mx-auto text-center">
-        <div className="mb-8 animate-fade-in">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6 leading-tight">
-            {title}
-          </h2>
-          <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            {subtitle}
-          </p>
-        </div>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-fade-in-up">
+          {title}
+        </h1>
+        <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          {subtitle}
+        </p>
         
-        {showSearch && (
-          <div className="max-w-2xl mx-auto mb-8 animate-slide-up">
-            <div className="relative group">
-              <Input
-                type="text"
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="w-full h-16 px-8 text-lg rounded-2xl border-2 border-gray-200 focus:border-blue-500 shadow-xl bg-white/80 backdrop-blur-sm transition-all duration-300 group-hover:shadow-2xl focus:shadow-2xl"
-              />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        <div className="max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+          <EnhancedSearch
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={onSearchChange}
+            showTrending={true}
+          />
+        </div>
+
+        {/* CTA Section */}
+        <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
+          <p className="text-sm text-gray-500 mb-4">Join thousands of successful collaborations</p>
+          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>1000+ Active Specialists</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>98% Success Rate</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>24/7 Support</span>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
