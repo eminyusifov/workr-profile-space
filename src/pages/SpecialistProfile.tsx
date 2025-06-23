@@ -10,11 +10,14 @@ import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
+import WorkModal from "@/components/profile/WorkModal";
 
 const SpecialistProfile = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("works");
+  const [activeTab, setActiveTab] = useState("info");
   const [isFavorited, setIsFavorited] = useState(false);
+  const [selectedWork, setSelectedWork] = useState<any>(null);
+  const [favoriteWorks, setFavoriteWorks] = useState<number[]>([]);
 
   // Mock data - in real app, this would come from API
   const specialist = {
@@ -31,9 +34,48 @@ const SpecialistProfile = () => {
     price: "800$ +",
     avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
     portfolio: [
-      { id: 1, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "Book Cover Design", progress: "70%" },
-      { id: 2, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "Brand Identity", progress: "70%" },
-      { id: 3, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "UI Design", progress: "70%" },
+      { 
+        id: 1, 
+        title: "Book Cover Design", 
+        category: "Graphic Design",
+        progress: "70%", 
+        likes: 124,
+        description: "A modern book cover design with clean typography and engaging visuals.",
+        tags: ["Design", "Typography", "Print"],
+        author: {
+          name: "S. Atayev",
+          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+          rating: 4.6
+        }
+      },
+      { 
+        id: 2, 
+        title: "Brand Identity", 
+        category: "Branding",
+        progress: "70%", 
+        likes: 89,
+        description: "Complete brand identity package including logo, colors, and guidelines.",
+        tags: ["Branding", "Logo", "Identity"],
+        author: {
+          name: "S. Atayev",
+          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+          rating: 4.6
+        }
+      },
+      { 
+        id: 3, 
+        title: "UI Design", 
+        category: "UX/UI Design",
+        progress: "70%", 
+        likes: 156,
+        description: "Modern UI design for mobile application with intuitive user experience.",
+        tags: ["UI", "Mobile", "UX"],
+        author: {
+          name: "S. Atayev",
+          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+          rating: 4.6
+        }
+      },
     ],
     schedule: [
       { date: "2024-01-15", status: "busy" },
@@ -47,6 +89,18 @@ const SpecialistProfile = () => {
   const handleWriteClick = () => {
     console.log("Write message clicked");
     // TODO: Navigate to message composer or open chat
+  };
+
+  const handleWorkClick = (work: any) => {
+    setSelectedWork(work);
+  };
+
+  const handleToggleFavoriteWork = (workId: number) => {
+    setFavoriteWorks(prev => 
+      prev.includes(workId) 
+        ? prev.filter(id => id !== workId)
+        : [...prev, workId]
+    );
   };
 
   const rightContent = (
@@ -120,49 +174,9 @@ const SpecialistProfile = () => {
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="works" className="text-sm font-medium">Works</TabsTrigger>
                 <TabsTrigger value="info" className="text-sm font-medium">Info</TabsTrigger>
+                <TabsTrigger value="works" className="text-sm font-medium">Works</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="works" className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
-                  
-                  {/* Filter Tags */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
-                    <Badge variant="outline">SMM</Badge>
-                    <Badge variant="outline">Graphic</Badge>
-                    <Badge variant="outline">UX/UI</Badge>
-                    <Badge variant="outline">Photo</Badge>
-                  </div>
-
-                  {/* Portfolio Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {specialist.portfolio.map((work) => (
-                      <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
-                        <CardContent className="p-0">
-                          <div className="relative">
-                            <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                              <div className="text-white text-center p-4">
-                                <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
-                                <div className="text-lg font-bold">{work.title}</div>
-                                <div className="text-xs opacity-75 mt-2">Design Project</div>
-                              </div>
-                            </div>
-                            <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                              {work.progress} complete
-                            </div>
-                          </div>
-                          <div className="p-4">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{work.title}</h4>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
 
               <TabsContent value="info" className="space-y-6">
                 {/* Schedule Calendar */}
@@ -242,9 +256,77 @@ const SpecialistProfile = () => {
                   <Badge variant="secondary">{specialist.workspace}</Badge>
                 </div>
               </TabsContent>
+
+              <TabsContent value="works" className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
+                  
+                  {/* Filter Tags */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
+                    <Badge variant="outline">SMM</Badge>
+                    <Badge variant="outline">Graphic</Badge>
+                    <Badge variant="outline">UX/UI</Badge>
+                    <Badge variant="outline">Photo</Badge>
+                  </div>
+
+                  {/* Portfolio Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {specialist.portfolio.map((work) => (
+                      <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
+                        <CardContent className="p-0">
+                          <div className="relative" onClick={() => handleWorkClick(work)}>
+                            <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                              <div className="text-white text-center p-4">
+                                <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
+                                <div className="text-lg font-bold">{work.title}</div>
+                                <div className="text-xs opacity-75 mt-2">Design Project</div>
+                              </div>
+                            </div>
+                            <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
+                              {work.progress} complete
+                            </div>
+                            <div className="absolute top-2 right-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleFavoriteWork(work.id);
+                                }}
+                              >
+                                <Heart className={`h-4 w-4 ${favoriteWorks.includes(work.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="p-4">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{work.title}</h4>
+                            <div className="flex items-center justify-between mt-2">
+                              <Badge variant="outline">{work.category}</Badge>
+                              <div className="flex items-center space-x-1 text-gray-500">
+                                <Heart className="h-4 w-4" />
+                                <span className="text-sm">{work.likes}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
         </div>
+
+        {selectedWork && (
+          <WorkModal
+            isOpen={!!selectedWork}
+            onClose={() => setSelectedWork(null)}
+            work={selectedWork}
+          />
+        )}
 
         <BottomNavigation activeTab="catalog" />
       </div>

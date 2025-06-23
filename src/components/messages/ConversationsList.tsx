@@ -1,11 +1,14 @@
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Conversation {
   id: number;
-  user: { name: string; avatar: string };
+  user: {
+    name: string;
+    avatar: string;
+  };
   lastMessage: string;
   timestamp: string;
   unread: number;
@@ -13,45 +16,53 @@ interface Conversation {
 
 interface ConversationsListProps {
   conversations: Conversation[];
-  onConversationClick?: (conversation: Conversation) => void;
+  onConversationClick: (conversation: Conversation) => void;
 }
 
 const ConversationsList = ({ conversations, onConversationClick }: ConversationsListProps) => {
   return (
-    <section className="px-4 sm:px-6 lg:px-8 pb-20">
-      <div className="max-w-7xl mx-auto">
-        <div className="space-y-4">
-          {conversations.map((conversation) => (
-            <Card 
-              key={conversation.id} 
-              className="hover:shadow-lg transition-all duration-300 bg-white/70 backdrop-blur-sm border-0 shadow-md cursor-pointer"
-              onClick={() => onConversationClick?.(conversation)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={conversation.user.avatar} />
-                    <AvatarFallback>{conversation.user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-gray-900">{conversation.user.name}</h4>
-                      <span className="text-sm text-gray-500">{conversation.timestamp}</span>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">{conversation.lastMessage}</p>
-                  </div>
+    <div className="space-y-4">
+      {conversations.map((conversation) => (
+        <Card 
+          key={conversation.id} 
+          className="cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => onConversationClick(conversation)}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={conversation.user.avatar} />
+                <AvatarFallback>
+                  {conversation.user.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                    {conversation.user.name}
+                  </h3>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {conversation.timestamp}
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                    {conversation.lastMessage}
+                  </p>
                   {conversation.unread > 0 && (
-                    <Badge className="bg-blue-600 text-white">
+                    <Badge className="bg-blue-500 text-white text-xs">
                       {conversation.unread}
                     </Badge>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 };
 
