@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Heart, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import ConversationsList from "@/components/messages/ConversationsList";
 import ChatModal from "@/components/messages/ChatModal";
@@ -59,65 +60,67 @@ const Messages = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      <PageHeader 
-        title="Messages"
-        showBackButton
-        rightContent={rightContent}
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <PageHeader 
+          title="Messages"
+          showBackButton
+          rightContent={rightContent}
+        />
 
-      {/* Tabs */}
-      <section className="px-4 sm:px-6 lg:px-8 mb-6 pt-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex space-x-4">
-            <Button
-              variant={activeTab === "messages" ? "default" : "outline"}
-              onClick={() => setActiveTab("messages")}
-              className="rounded-full"
-            >
-              Messages
-            </Button>
-            <Button
-              variant={activeTab === "groups" ? "default" : "outline"}
-              onClick={() => setActiveTab("groups")}
-              className="rounded-full"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Groups
-            </Button>
+        {/* Tabs */}
+        <section className="px-4 sm:px-6 lg:px-8 mb-6 pt-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex space-x-4">
+              <Button
+                variant={activeTab === "messages" ? "default" : "outline"}
+                onClick={() => setActiveTab("messages")}
+                className="rounded-full"
+              >
+                Messages
+              </Button>
+              <Button
+                variant={activeTab === "groups" ? "default" : "outline"}
+                onClick={() => setActiveTab("groups")}
+                className="rounded-full"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Groups
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Search */}
-      <section className="px-4 sm:px-6 lg:px-8 mb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search conversations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 rounded-xl border-2 border-gray-200 focus:border-blue-500"
-            />
+        {/* Search */}
+        <section className="px-4 sm:px-6 lg:px-8 mb-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search conversations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 rounded-xl border-2 border-gray-200 focus:border-blue-500"
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <ConversationsList 
-        conversations={filteredConversations} 
-        onConversationClick={handleConversationClick}
-      />
+        <ConversationsList 
+          conversations={filteredConversations} 
+          onConversationClick={handleConversationClick}
+        />
 
-      <ChatModal 
-        conversation={selectedConversation}
-        isOpen={isChatModalOpen}
-        onClose={() => setIsChatModalOpen(false)}
-      />
+        <ChatModal 
+          conversation={selectedConversation}
+          isOpen={isChatModalOpen}
+          onClose={() => setIsChatModalOpen(false)}
+        />
 
-      <BottomNavigation activeTab="messages" />
-    </div>
+        <BottomNavigation activeTab="messages" />
+      </div>
+    </ThemeProvider>
   );
 };
 
