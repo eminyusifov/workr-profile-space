@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Calendar as CalendarIcon, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
@@ -13,7 +13,7 @@ import BottomNavigation from "@/components/shared/BottomNavigation";
 
 const SpecialistProfile = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("info");
+  const [activeTab, setActiveTab] = useState("works");
   const [isFavorited, setIsFavorited] = useState(false);
 
   // Mock data - in real app, this would come from API
@@ -34,18 +34,40 @@ const SpecialistProfile = () => {
       { id: 1, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "Book Cover Design", progress: "70%" },
       { id: 2, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "Brand Identity", progress: "70%" },
       { id: 3, image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png", title: "UI Design", progress: "70%" },
+    ],
+    schedule: [
+      { date: "2024-01-15", status: "busy" },
+      { date: "2024-01-16", status: "available" },
+      { date: "2024-01-17", status: "busy" },
+      { date: "2024-01-18", status: "available" },
+      { date: "2024-01-19", status: "available" },
     ]
   };
 
+  const handleWriteClick = () => {
+    console.log("Write message clicked");
+    // TODO: Navigate to message composer or open chat
+  };
+
   const rightContent = (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      className={`hover:bg-red-50 hover:text-red-600 ${isFavorited ? 'text-red-600' : ''}`}
-      onClick={() => setIsFavorited(!isFavorited)}
-    >
-      <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
-    </Button>
+    <div className="flex items-center space-x-2">
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="hover:bg-blue-50 hover:text-blue-600"
+        onClick={handleWriteClick}
+      >
+        <Edit className="h-4 w-4" />
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className={`hover:bg-red-50 hover:text-red-600 ${isFavorited ? 'text-red-600' : ''}`}
+        onClick={() => setIsFavorited(!isFavorited)}
+      >
+        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+      </Button>
+    </div>
   );
 
   return (
@@ -98,43 +120,9 @@ const SpecialistProfile = () => {
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="info" className="text-sm font-medium">Info</TabsTrigger>
                 <TabsTrigger value="works" className="text-sm font-medium">Works</TabsTrigger>
+                <TabsTrigger value="info" className="text-sm font-medium">Info</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="info" className="space-y-6">
-                {/* Skills */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {specialist.skills.split(', ').map((skill) => (
-                      <Badge key={skill} variant="secondary">{skill}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tools */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Tools</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {specialist.tools.split(', ').map((tool) => (
-                      <Badge key={tool} variant="outline">{tool}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Language */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Languages</h3>
-                  <p className="text-gray-700 dark:text-gray-300">{specialist.languages}</p>
-                </div>
-
-                {/* Workspace */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Workspace</h3>
-                  <Badge variant="secondary">{specialist.workspace}</Badge>
-                </div>
-              </TabsContent>
 
               <TabsContent value="works" className="space-y-6">
                 <div>
@@ -173,6 +161,85 @@ const SpecialistProfile = () => {
                       </Card>
                     ))}
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="info" className="space-y-6">
+                {/* Schedule Calendar */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <CalendarIcon className="h-5 w-5 mr-2" />
+                    Availability Calendar
+                  </h3>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div className="grid grid-cols-7 gap-2 mb-4">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+                        <div key={day} className="text-center text-sm font-medium text-gray-600 dark:text-gray-400 p-2">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-2">
+                      {Array.from({ length: 21 }, (_, i) => {
+                        const dayNumber = i + 1;
+                        const isAvailable = Math.random() > 0.3;
+                        return (
+                          <div
+                            key={i}
+                            className={`aspect-square flex items-center justify-center text-sm rounded ${
+                              isAvailable 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            }`}
+                          >
+                            {dayNumber}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center justify-center space-x-4 mt-4 text-sm">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
+                        <span className="text-gray-600 dark:text-gray-400">Available</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-red-500 rounded mr-2"></div>
+                        <span className="text-gray-600 dark:text-gray-400">Busy</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skills */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Skills</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {specialist.skills.split(', ').map((skill) => (
+                      <Badge key={skill} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tools */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Tools</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {specialist.tools.split(', ').map((tool) => (
+                      <Badge key={tool} variant="outline">{tool}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Language */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Languages</h3>
+                  <p className="text-gray-700 dark:text-gray-300">{specialist.languages}</p>
+                </div>
+
+                {/* Workspace */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Workspace</h3>
+                  <Badge variant="secondary">{specialist.workspace}</Badge>
                 </div>
               </TabsContent>
             </Tabs>

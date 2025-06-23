@@ -1,10 +1,10 @@
 
 import { useState } from "react";
-import { Bell, Settings, Search, Menu, ArrowLeft } from "lucide-react";
+import { Bell, Search, Menu, ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 
 interface PageHeaderProps {
@@ -31,6 +31,11 @@ const PageHeader = ({
 
   const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const handleNotificationClick = () => {
+    console.log("Notifications clicked");
+    // TODO: Navigate to notifications page or show dropdown
   };
 
   return (
@@ -83,7 +88,7 @@ const PageHeader = ({
             <ThemeToggle />
 
             {showNotifications && (
-              <Button variant="ghost" size="sm" className="relative">
+              <Button variant="ghost" size="sm" className="relative" onClick={handleNotificationClick}>
                 <Bell className="h-5 w-5" />
                 {notificationCount > 0 && (
                   <Badge 
@@ -97,9 +102,11 @@ const PageHeader = ({
             )}
 
             {showSettings && (
-              <Button variant="ghost" size="sm">
-                <Settings className="h-5 w-5" />
-              </Button>
+              <Link to="/favorites">
+                <Button variant="ghost" size="sm">
+                  <Heart className="h-5 w-5" />
+                </Button>
+              </Link>
             )}
 
             {rightContent}

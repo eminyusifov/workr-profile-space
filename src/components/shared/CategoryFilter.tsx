@@ -5,27 +5,20 @@ interface CategoryFilterProps {
   categories: string[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  className?: string;
 }
 
-const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, className = "" }: CategoryFilterProps) => {
+const CategoryFilter = ({ categories, selectedCategory, onCategoryChange }: CategoryFilterProps) => {
   return (
-    <section className={`px-4 sm:px-6 lg:px-8 mb-8 ${className}`}>
+    <section className="relative z-50 py-4 px-4 sm:px-6 lg:px-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-wrap gap-3 justify-center mb-8">
-          {categories.map((category, index) => (
+        <div className="flex space-x-2 overflow-x-auto pb-2">
+          {categories.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
               onClick={() => onCategoryChange(category)}
-              className={`rounded-full px-6 py-3 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 ${
-                selectedCategory === category
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl"
-                  : "border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-lg"
-              } animate-fade-in`}
-              style={{
-                animationDelay: `${index * 100}ms`
-              }}
+              className="whitespace-nowrap flex-shrink-0"
             >
               {category}
             </Button>
