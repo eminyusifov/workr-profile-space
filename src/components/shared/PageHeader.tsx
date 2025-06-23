@@ -1,9 +1,10 @@
 
 import { useState } from "react";
-import { Bell, Settings, Search, Menu } from "lucide-react";
+import { Bell, Settings, Search, Menu, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 
 interface PageHeaderProps {
@@ -11,6 +12,7 @@ interface PageHeaderProps {
   showSettings?: boolean;
   showNotifications?: boolean;
   showSearch?: boolean;
+  showBackButton?: boolean;
   rightContent?: React.ReactNode;
   notificationCount?: number;
 }
@@ -20,10 +22,16 @@ const PageHeader = ({
   showSettings = false, 
   showNotifications = true,
   showSearch = false,
+  showBackButton = false,
   rightContent,
   notificationCount = 0
 }: PageHeaderProps) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700">
@@ -31,9 +39,15 @@ const PageHeader = ({
         <div className="flex items-center justify-between h-16">
           {/* Left side */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+            {showBackButton ? (
+              <Button variant="ghost" size="sm" onClick={handleBackClick}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
             <h1 className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               {title}
             </h1>
