@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Play, Heart, MessageCircle, Share, X } from "lucide-react";
@@ -22,6 +22,19 @@ const ReelModal = ({ reel, isOpen, onClose }: ReelModalProps) => {
   const [isLiked, setIsLiked] = useState(false);
 
   if (!reel) return null;
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    console.log(`${isLiked ? 'Unliked' : 'Liked'} reel:`, reel.title);
+  };
+
+  const handleComment = () => {
+    console.log("Comment on reel:", reel.title);
+  };
+
+  const handleShare = () => {
+    console.log("Share reel:", reel.title);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -67,15 +80,25 @@ const ReelModal = ({ reel, isOpen, onClose }: ReelModalProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={handleLike}
                 className={`text-white hover:bg-white/20 ${isLiked ? 'text-red-500' : ''}`}
               >
                 <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-white hover:bg-white/20"
+                onClick={handleComment}
+              >
                 <MessageCircle className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-white hover:bg-white/20"
+                onClick={handleShare}
+              >
                 <Share className="h-5 w-5" />
               </Button>
             </div>
