@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
-import HeroSection from "@/components/shared/HeroSection";
 import CategoryFilter from "@/components/shared/CategoryFilter";
 import ReelsSection from "@/components/messages/ReelsSection";
 import BottomNavigation from "@/components/shared/BottomNavigation";
@@ -66,90 +66,94 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
-          <p className="text-gray-600">{error}</p>
+      <ThemeProvider>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Something went wrong</h2>
+            <p className="text-gray-600 dark:text-gray-300">{error}</p>
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      <PageHeader showSettings rightContent={rightContent} />
-      
-      <ReelsSection reels={reels} />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+        <PageHeader showSettings rightContent={rightContent} />
+        
+        <ReelsSection reels={reels} />
 
-      <section className="relative py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Enhanced background with animated elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80"></div>
-        <div className="absolute inset-0 opacity-50" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
-        
-        {/* Floating geometric shapes */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-        
-        <div className="relative max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-fade-in-up">
-            Find the Perfect <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Creative</span> Professional
-          </h1>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-            Connect with talented specialists across design, development, and digital marketing. Build your dream team today.
-          </p>
+        <section className="relative py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Enhanced background with animated elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-purple-900/20"></div>
+          <div className="absolute inset-0 opacity-50" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
           
-          <div className="max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-            <AdvancedSearch
-              placeholder="Search for specialists, skills, or services..."
-              value={searchQuery}
-              onChange={setSearchQuery}
-              showAdvanced={true}
-              onAdvancedSearch={handleAdvancedSearch}
-            />
-          </div>
+          {/* Floating geometric shapes */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+          
+          <div className="relative max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight animate-fade-in-up">
+              Find the Perfect <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Creative</span> Professional
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              Connect with talented specialists across design, development, and digital marketing. Build your dream team today.
+            </p>
+            
+            <div className="max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+              <AdvancedSearch
+                placeholder="Search for specialists, skills, or services..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+                showAdvanced={true}
+                onAdvancedSearch={handleAdvancedSearch}
+              />
+            </div>
 
-          {/* CTA Section */}
-          <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
-            <p className="text-sm text-gray-500 mb-4">Join thousands of successful collaborations</p>
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>1000+ Active Specialists</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>98% Success Rate</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>24/7 Support</span>
+            {/* CTA Section */}
+            <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Join thousands of successful collaborations</p>
+              <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>1000+ Active Specialists</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>98% Success Rate</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span>24/7 Support</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <CategoryFilter 
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
-
-      {isLoading ? (
-        <LoadingGrid count={6} title="Artists" />
-      ) : (
-        <SpecialistGrid 
-          specialists={filteredSpecialists}
-          title="Artists"
+        <CategoryFilter 
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
         />
-      )}
 
-      <FloatingActionButton />
-      <BottomNavigation activeTab="main" />
-    </div>
+        {isLoading ? (
+          <LoadingGrid count={6} title="Artists" />
+        ) : (
+          <SpecialistGrid 
+            specialists={filteredSpecialists}
+            title="Artists"
+          />
+        )}
+
+        <FloatingActionButton />
+        <BottomNavigation activeTab="main" />
+      </div>
+    </ThemeProvider>
   );
 };
 
