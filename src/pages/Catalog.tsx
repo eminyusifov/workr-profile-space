@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import FilterSection from "@/components/catalog/FilterSection";
 import SuppliersGrid from "@/components/catalog/SuppliersGrid";
@@ -104,31 +105,33 @@ const Catalog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      <PageHeader 
-        title={showLeaderboard ? "Top Suppliers" : "Find Suppliers"}
-        showBackButton
-      />
-
-      <ReelsSection reels={reels} />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <FilterSection 
-          onFiltersChange={setFilters}
-          showLeaderboard={showLeaderboard}
-          onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
+    <ThemeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <PageHeader 
+          title={showLeaderboard ? "Top Suppliers" : "Find Suppliers"}
+          showBackButton
         />
 
-        <SuppliersGrid
-          suppliers={sortedSuppliers}
-          showLeaderboard={showLeaderboard}
-          favoriteSuppliers={favoriteSuppliers}
-          onToggleFavorite={toggleFavorite}
-        />
+        <ReelsSection reels={reels} />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <FilterSection 
+            onFiltersChange={setFilters}
+            showLeaderboard={showLeaderboard}
+            onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
+          />
+
+          <SuppliersGrid
+            suppliers={sortedSuppliers}
+            showLeaderboard={showLeaderboard}
+            favoriteSuppliers={favoriteSuppliers}
+            onToggleFavorite={toggleFavorite}
+          />
+        </div>
+
+        <BottomNavigation activeTab="catalog" />
       </div>
-
-      <BottomNavigation activeTab="catalog" />
-    </div>
+    </ThemeProvider>
   );
 };
 
