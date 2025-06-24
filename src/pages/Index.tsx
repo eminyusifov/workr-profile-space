@@ -10,8 +10,8 @@ import BottomNavigation from "@/components/shared/BottomNavigation";
 import SpecialistGrid from "@/components/shared/SpecialistGrid";
 import LoadingGrid from "@/components/shared/LoadingGrid";
 import FloatingActionButton from "@/components/shared/FloatingActionButton";
-import AdvancedSearch from "@/components/shared/AdvancedSearch";
 import { useSpecialists } from "@/hooks/useSpecialists";
+import IndexAdvancedSearch from "@/components/index/IndexAdvancedSearch";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +39,18 @@ const Index = () => {
       user: { name: "Maya Patel", username: "@mayacreates", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
       thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
       title: "Brand Identity"
+    },
+    {
+      id: 4,
+      user: { name: "David Kim", username: "@davidkim", avatar: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png" },
+      thumbnail: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      title: "Product Photography"
+    },
+    {
+      id: 5,
+      user: { name: "Emma Wilson", username: "@emmawilson", avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" },
+      thumbnail: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+      title: "Motion Graphics"
     }
   ];
 
@@ -85,19 +97,13 @@ const Index = () => {
         <ReelsSection reels={reels} />
 
         <section className="relative py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
-          {/* Enhanced background */}
+          {/* Enhanced background with proper gradients */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-purple-900/20"></div>
-          <div 
-            className="absolute inset-0 opacity-30 dark:opacity-10"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`
-            }}
-          ></div>
           
-          {/* Floating elements - using rounded divs instead of gradients */}
-          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-200/30 dark:bg-green-800/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+          {/* Floating elements with fixed blur */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/20 dark:bg-blue-800/10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-200/20 dark:bg-purple-800/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-200/20 dark:bg-green-800/10 rounded-full blur-2xl"></div>
           
           <div className="relative max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight animate-fade-in-up">
@@ -106,16 +112,6 @@ const Index = () => {
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               Connect with talented specialists across design, development, and digital marketing. Build your dream team today.
             </p>
-            
-            <div className="max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-              <AdvancedSearch
-                placeholder="Search for specialists, skills, or services..."
-                value={searchQuery}
-                onChange={setSearchQuery}
-                showAdvanced={true}
-                onAdvancedSearch={handleAdvancedSearch}
-              />
-            </div>
 
             {/* CTA Section */}
             <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
@@ -142,6 +138,12 @@ const Index = () => {
           categories={categories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+        />
+
+        <IndexAdvancedSearch
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onAdvancedSearch={handleAdvancedSearch}
         />
 
         {isLoading ? (

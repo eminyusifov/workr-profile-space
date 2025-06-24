@@ -27,6 +27,14 @@ const Catalog = () => {
       filtered = filtered.filter(supplier => supplier.category === filters.selectedCategory);
     }
     
+    if (filters.selectedSkills && filters.selectedSkills.length > 0) {
+      filtered = filtered.filter(supplier => 
+        filters.selectedSkills.some((skill: string) => 
+          supplier.tools.includes(skill) || supplier.category.toLowerCase().includes(skill.toLowerCase())
+        )
+      );
+    }
+    
     setFilteredSuppliers(filtered);
   };
 
@@ -127,6 +135,24 @@ const mockSuppliers = [
     responseTime: "1 hour",
     description: "Creative graphic designer with a passion for branding",
     verified: false
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    username: "@davidkim",
+    rating: 4.6,
+    reviews: 92,
+    category: "Mobile Development",
+    price: "$85/hour",
+    status: "Available",
+    workStatus: "Freelance",
+    languages: ["EN", "KR"],
+    tools: ["React Native", "Swift"],
+    avatar: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+    completedProjects: 34,
+    responseTime: "3 hours",
+    description: "Mobile app developer with expertise in iOS and Android",
+    verified: true
   }
 ];
 

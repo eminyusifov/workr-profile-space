@@ -7,14 +7,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PortfolioTab from "@/components/profile/PortfolioTab";
 import ActivityTab from "@/components/profile/ActivityTab";
 import SettingsTab from "@/components/profile/SettingsTab";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
+  const { toast } = useToast();
+
   const handleEditProfile = () => {
     console.log("Edit profile clicked");
+    toast({
+      title: "Edit Profile",
+      description: "Profile editing feature will be available soon.",
+    });
   };
 
   const handleShareProfile = () => {
     console.log("Share profile clicked");
+    if (navigator.share) {
+      navigator.share({
+        title: mockUser.name,
+        text: `Check out ${mockUser.name}'s profile`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copied",
+        description: "Profile link copied to clipboard.",
+      });
+    }
+  };
+
+  const handleManagePrivacy = () => {
+    console.log("Manage privacy clicked");
+    toast({
+      title: "Privacy Settings",
+      description: "Privacy management will be available soon.",
+    });
+  };
+
+  const handleNotifications = () => {
+    console.log("Notifications clicked");
+    toast({
+      title: "Notification Settings",
+      description: "Notification configuration will be available soon.",
+    });
   };
 
   return (
@@ -46,7 +82,10 @@ const Profile = () => {
             </TabsContent>
             
             <TabsContent value="settings" className="mt-6">
-              <SettingsTab />
+              <SettingsTab 
+                onManagePrivacy={handleManagePrivacy}
+                onNotifications={handleNotifications}
+              />
             </TabsContent>
           </Tabs>
         </div>

@@ -1,18 +1,34 @@
 
+import { useState } from "react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import ConversationsList from "@/components/messages/ConversationsList";
 import { Button } from "@/components/ui/button";
-import { MessageSquarePlus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MessageSquarePlus, Search } from "lucide-react";
 
 const Messages = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredConversations, setFilteredConversations] = useState(mockConversations);
+
   const handleNewMessage = () => {
     console.log("Creating new message");
+    // TODO: Navigate to new message composer
   };
 
   const handleConversationClick = (conversation: any) => {
     console.log("Opening conversation:", conversation);
+    // TODO: Navigate to chat view
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const filtered = mockConversations.filter(conversation =>
+      conversation.user.name.toLowerCase().includes(query.toLowerCase()) ||
+      conversation.lastMessage.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredConversations(filtered);
   };
 
   const rightContent = (
@@ -30,8 +46,21 @@ const Messages = () => {
         />
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search conversations..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+              />
+            </div>
+          </div>
+
           <ConversationsList 
-            conversations={mockConversations}
+            conversations={filteredConversations}
             onConversationClick={handleConversationClick}
           />
         </div>

@@ -3,7 +3,7 @@ import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ReelModal from "./ReelModal";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 interface Reel {
   id: number;
@@ -31,7 +31,14 @@ const ReelsSection = ({ reels }: ReelsSectionProps) => {
       <section className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Latest Work</h3>
-          <Carousel className="w-full">
+          <Carousel 
+            className="w-full"
+            opts={{
+              align: "start",
+              loop: true,
+              dragFree: true,
+            }}
+          >
             <CarouselContent className="-ml-2 md:-ml-4">
               {reels.map((reel) => (
                 <CarouselItem key={reel.id} className="pl-2 md:pl-4 basis-auto">
@@ -64,6 +71,8 @@ const ReelsSection = ({ reels }: ReelsSectionProps) => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+            <CarouselPrevious className="hidden sm:flex" />
+            <CarouselNext className="hidden sm:flex" />
           </Carousel>
         </div>
       </section>
