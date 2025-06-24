@@ -26,6 +26,26 @@ const ReelsSection = ({ reels }: ReelsSectionProps) => {
     setIsModalOpen(true);
   };
 
+  const handleNext = () => {
+    if (selectedReel) {
+      const currentIndex = reels.findIndex(r => r.id === selectedReel.id);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < reels.length) {
+        setSelectedReel(reels[nextIndex]);
+      }
+    }
+  };
+
+  const handlePrevious = () => {
+    if (selectedReel) {
+      const currentIndex = reels.findIndex(r => r.id === selectedReel.id);
+      const prevIndex = currentIndex - 1;
+      if (prevIndex >= 0) {
+        setSelectedReel(reels[prevIndex]);
+      }
+    }
+  };
+
   return (
     <>
       <section className="py-6 px-4 sm:px-6 lg:px-8">
@@ -79,8 +99,11 @@ const ReelsSection = ({ reels }: ReelsSectionProps) => {
 
       <ReelModal 
         reel={selectedReel}
+        reels={reels}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
       />
     </>
   );

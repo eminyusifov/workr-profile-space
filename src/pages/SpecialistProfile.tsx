@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Heart, Calendar as CalendarIcon, Edit, Info, MessageCircle, Trophy } from "lucide-react";
+import { Star, Heart, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
@@ -131,14 +131,6 @@ const SpecialistProfile = () => {
       <Button 
         variant="ghost" 
         size="sm" 
-        className="hover:bg-blue-50 hover:text-blue-600"
-        onClick={handleWriteClick}
-      >
-        <MessageCircle className="h-4 w-4" />
-      </Button>
-      <Button 
-        variant="ghost" 
-        size="sm" 
         className={`hover:bg-red-50 hover:text-red-600 ${isFavorited ? 'text-red-600' : ''}`}
         onClick={handleHeartClick}
       >
@@ -165,32 +157,12 @@ const SpecialistProfile = () => {
                 <AvatarFallback>{specialist.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{specialist.name}</h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{specialist.username}</p>
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center space-x-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-5 w-5 cursor-pointer transition-colors ${
-                          i < Math.floor(specialist.rating)
-                            ? "fill-blue-500 text-blue-500"
-                            : userRating > i
-                            ? "fill-yellow-500 text-yellow-500"
-                            : "text-gray-300 hover:text-yellow-400"
-                        }`}
-                        onClick={() => handleStarClick(i + 1)}
-                      />
-                    ))}
-                    <span className="text-sm font-medium ml-2">
-                      {specialist.rating} ({specialist.reviews} reviews)
-                    </span>
-                  </div>
+                <div className="flex items-center space-x-3 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{specialist.name}</h2>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Info className="h-4 w-4 mr-1" />
-                        Info
+                      <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-full">
+                        i
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
@@ -218,145 +190,124 @@ const SpecialistProfile = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
-                  }`} />
-                  <span className="text-sm text-gray-600 dark:text-gray-300">{specialist.status}</span>
-                  <span className="text-lg font-bold text-gray-900 dark:text-white ml-4">{specialist.price}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Calendar */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                <CalendarIcon className="h-4 w-4 mr-2" />
-                Availability
-              </h3>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                <div className="grid grid-cols-7 gap-1">
-                  {Array.from({ length: 14 }, (_, i) => {
-                    const dayNumber = i + 1;
-                    const isAvailable = Math.random() > 0.3;
-                    return (
-                      <div
+                <p className="text-gray-600 dark:text-gray-300 mb-4">{specialist.username}</p>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="flex items-center space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
                         key={i}
-                        className={`w-6 h-6 flex items-center justify-center text-xs rounded ${
-                          isAvailable 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        className={`h-5 w-5 cursor-pointer transition-colors ${
+                          i < Math.floor(specialist.rating)
+                            ? "fill-blue-500 text-blue-500"
+                            : userRating > i
+                            ? "fill-yellow-500 text-yellow-500"
+                            : "text-gray-300 hover:text-yellow-400"
                         }`}
-                      >
-                        {dayNumber}
-                      </div>
-                    );
-                  })}
+                        onClick={() => handleStarClick(i + 1)}
+                      />
+                    ))}
+                    <span className="text-sm font-medium ml-2">
+                      {specialist.rating} ({specialist.reviews} reviews)
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
+                    }`} />
+                    <span className="text-sm text-gray-600 dark:text-gray-300">{specialist.status}</span>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white ml-4">{specialist.price}</span>
+                  </div>
+                  <Button onClick={handleWriteClick} className="bg-blue-600 hover:bg-blue-700">
+                    <Send className="h-4 w-4 mr-2" />
+                    Write
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="works" className="text-sm font-medium">Works</TabsTrigger>
-                <TabsTrigger value="info" className="text-sm font-medium">Info</TabsTrigger>
-              </TabsList>
+            {/* Compact Calendar in one line */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Availability</h3>
+              <div className="flex space-x-2">
+                {Array.from({ length: 14 }, (_, i) => {
+                  const dayNumber = i + 1;
+                  const isAvailable = Math.random() > 0.3;
+                  return (
+                    <div
+                      key={i}
+                      className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-lg transition-colors ${
+                        isAvailable 
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200' 
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-200'
+                      }`}
+                    >
+                      {dayNumber}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
-              <TabsContent value="works" className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
-                  
-                  {/* Filter Tags */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
-                    <Badge variant="outline">SMM</Badge>
-                    <Badge variant="outline">Graphic</Badge>
-                    <Badge variant="outline">UX/UI</Badge>
-                    <Badge variant="outline">Photo</Badge>
-                  </div>
+            {/* Works Section Only */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
+              
+              {/* Filter Tags */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
+                <Badge variant="outline">SMM</Badge>
+                <Badge variant="outline">Graphic</Badge>
+                <Badge variant="outline">UX/UI</Badge>
+                <Badge variant="outline">Photo</Badge>
+              </div>
 
-                  {/* Portfolio Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {specialist.portfolio.map((work) => (
-                      <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
-                        <CardContent className="p-0">
-                          <div className="relative" onClick={() => handleWorkClick(work)}>
-                            <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                              <div className="text-white text-center p-4">
-                                <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
-                                <div className="text-lg font-bold">{work.title}</div>
-                                <div className="text-xs opacity-75 mt-2">Design Project</div>
-                              </div>
-                            </div>
-                            <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                              {work.progress} complete
-                            </div>
-                            <div className="absolute top-2 right-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleToggleFavoriteWork(work.id);
-                                }}
-                              >
-                                <Heart className={`h-4 w-4 ${favoriteWorks.includes(work.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                              </Button>
-                            </div>
+              {/* Portfolio Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {specialist.portfolio.map((work) => (
+                  <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
+                    <CardContent className="p-0">
+                      <div className="relative" onClick={() => handleWorkClick(work)}>
+                        <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                          <div className="text-white text-center p-4">
+                            <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
+                            <div className="text-lg font-bold">{work.title}</div>
+                            <div className="text-xs opacity-75 mt-2">Design Project</div>
                           </div>
-                          <div className="p-4">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{work.title}</h4>
-                            <div className="flex items-center justify-between mt-2">
-                              <Badge variant="outline">{work.category}</Badge>
-                              <div className="flex items-center space-x-1 text-gray-500">
-                                <Heart className="h-4 w-4" />
-                                <span className="text-sm">{work.likes}</span>
-                              </div>
-                            </div>
+                        </div>
+                        <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
+                          {work.progress} complete
+                        </div>
+                        <div className="absolute top-2 right-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleFavoriteWork(work.id);
+                            }}
+                          >
+                            <Heart className={`h-4 w-4 ${favoriteWorks.includes(work.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white">{work.title}</h4>
+                        <div className="flex items-center justify-between mt-2">
+                          <Badge variant="outline">{work.category}</Badge>
+                          <div className="flex items-center space-x-1 text-gray-500">
+                            <Heart className="h-4 w-4" />
+                            <span className="text-sm">{work.likes}</span>
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="info" className="space-y-6">
-                {/* Skills */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {specialist.skills.split(', ').map((skill) => (
-                      <Badge key={skill} variant="secondary">{skill}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tools */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Tools</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {specialist.tools.split(', ').map((tool) => (
-                      <Badge key={tool} variant="outline">{tool}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Language */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Languages</h3>
-                  <p className="text-gray-700 dark:text-gray-300">{specialist.languages}</p>
-                </div>
-
-                {/* Workspace */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Workspace</h3>
-                  <Badge variant="secondary">{specialist.workspace}</Badge>
-                </div>
-              </TabsContent>
-            </Tabs>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

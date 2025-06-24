@@ -11,7 +11,7 @@ import SpecialistGrid from "@/components/shared/SpecialistGrid";
 import LoadingGrid from "@/components/shared/LoadingGrid";
 import FloatingActionButton from "@/components/shared/FloatingActionButton";
 import { useSpecialists } from "@/hooks/useSpecialists";
-import IndexAdvancedSearch from "@/components/index/IndexAdvancedSearch";
+import EnhancedSearch from "@/components/shared/EnhancedSearch";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,11 +62,6 @@ const Index = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleAdvancedSearch = (filters: any) => {
-    console.log("Advanced search filters:", filters);
-    // TODO: Implement advanced filtering logic
-  };
-
   const rightContent = (
     <Link to="/profile">
       <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all">
@@ -101,9 +96,9 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-purple-50/80 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-purple-900/20"></div>
           
           {/* Floating elements with fixed blur */}
-          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/20 dark:bg-blue-800/10 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-200/20 dark:bg-purple-800/10 rounded-full blur-2xl"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-200/20 dark:bg-green-800/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-xl"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-200/30 dark:bg-green-800/20 rounded-full blur-xl"></div>
           
           <div className="relative max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight animate-fade-in-up">
@@ -112,6 +107,16 @@ const Index = () => {
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               Connect with talented specialists across design, development, and digital marketing. Build your dream team today.
             </p>
+
+            {/* Enhanced Search */}
+            <div className="max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+              <EnhancedSearch
+                placeholder="Search for specialists, skills, or services..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+                showTrending={true}
+              />
+            </div>
 
             {/* CTA Section */}
             <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
@@ -138,12 +143,6 @@ const Index = () => {
           categories={categories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
-        />
-
-        <IndexAdvancedSearch
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onAdvancedSearch={handleAdvancedSearch}
         />
 
         {isLoading ? (

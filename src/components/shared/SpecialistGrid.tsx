@@ -1,169 +1,172 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Heart, MessageCircle, Eye } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star, Heart, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Specialist {
   id: number;
   name: string;
   username: string;
-  skills: string;
   rating: number;
   reviews: number;
   status: string;
+  skills: string;
   price: string;
   avatar: string;
-  isNew?: boolean;
-  languages?: string;
 }
 
 interface SpecialistGridProps {
   specialists: Specialist[];
-  title?: string;
-  showCount?: boolean;
-  className?: string;
+  title: string;
 }
 
-const SpecialistGrid = ({ specialists, title = "Specialists", showCount = true, className = "" }: SpecialistGridProps) => {
-  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+const SpecialistGrid = ({ specialists, title }: SpecialistGridProps) => {
+  const [favoriteSpecialists, setFavoriteSpecialists] = useState<number[]>([]);
+  const { toast } = useToast();
 
-  const toggleFavorite = (id: number, e: React.MouseEvent) => {
-    e.preventDefault();
-    setFavoriteIds(prev => 
-      prev.includes(id) 
-        ? prev.filter(fav => fav !== id)
-        : [...prev, id]
+  const handleToggleFavorite = (specialistId: number) => {
+    setFavoriteSpecialists(prev => 
+      prev.includes(specialistId) 
+        ? prev.filter(id => id !== specialistId)
+        : [...prev, specialistId]
     );
+    
+    const isFavorited = !favoriteSpecialists.includes(specialistId);
+    toast({
+      title: isFavorited ? "Added to Favorites" : "Removed from Favorites",
+      description: isFavorited ? "Specialist added to your favorites." : "Specialist removed from your favorites.",
+    });
   };
 
+  const handleMessageClick = (specialist: Specialist) => {
+    console.log("Opening message to:", specialist.name);
+    toast({
+      title: "Message",
+      description: `Opening chat with ${specialist.name}...`,
+    });
+    // Navigate to messages page or open chat modal
+  };
+
+  if (!specialists || specialists.length === 0) {
+    return (
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{title}</h2>
+          <p className="text-gray-600 dark:text-gray-300">No specialists found matching your criteria.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className={`px-4 sm:px-6 lg:px-8 pb-24 ${className}`}>
+    <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {title && (
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900">
-              {title} {showCount && <span className="text-blue-600">({specialists.length})</span>}
-            </h3>
-          </div>
-        )}
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">{title}</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {specialists.map((specialist, index) => (
-            <div
-              key={specialist.id}
-              className="animate-fade-in-up"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white/80 backdrop-blur-sm border-0 shadow-lg overflow-hidden relative">
-                {/* Hover gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                <CardContent className="p-6 relative">
-                  <div className="flex items-start justify-between mb-4">
-                    <Link to={`/specialist/${specialist.id}`} className="flex items-center space-x-3 flex-1">
-                      <Avatar className="h-14 w-14 ring-2 ring-white shadow-lg group-hover:ring-blue-200 transition-all duration-300">
-                        <AvatarImage src={specialist.avatar} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                          {specialist.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                          {specialist.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{specialist.username}</p>
-                      </div>
-                    </Link>
-                    
-                    <div className="flex items-center space-x-2">
-                      {specialist.isNew && (
-                        <Badge className="bg-gradient-to-r from-orange-400 to-red-500 text-white border-0 animate-pulse">
-                          new!
-                        </Badge>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className={`p-2 transition-all duration-300 ${
-                          favoriteIds.includes(specialist.id) 
-                            ? 'text-red-500 hover:text-red-600 bg-red-50' 
-                            : 'hover:bg-red-50 hover:text-red-500'
-                        }`}
-                        onClick={(e) => toggleFavorite(specialist.id, e)}
-                      >
-                        <Heart className={`h-4 w-4 ${favoriteIds.includes(specialist.id) ? 'fill-current' : ''}`} />
-                      </Button>
-                    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {specialists.map((specialist) => (
+            <Card key={specialist.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                    <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+                      <AvatarImage src={specialist.avatar} />
+                      <AvatarFallback className="text-lg font-semibold">
+                        {specialist.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Skills</p>
-                      <p className="text-sm font-medium text-gray-900 leading-relaxed">{specialist.skills}</p>
+                  {/* Action buttons */}
+                  <div className="absolute top-2 right-2 flex flex-col gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white rounded-full"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleToggleFavorite(specialist.id);
+                      }}
+                    >
+                      <Heart className={`h-4 w-4 ${favoriteSpecialists.includes(specialist.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white rounded-full"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleMessageClick(specialist);
+                      }}
+                    >
+                      <MessageCircle className="h-4 w-4 text-gray-600" />
+                    </Button>
+                  </div>
+
+                  {/* Status indicator */}
+                  <div className="absolute bottom-2 left-2">
+                    <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
+                      specialist.status === "Free" 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
+                      }`} />
+                      <span>{specialist.status}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <Link to={`/specialist/${specialist.id}`} className="block">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {specialist.name}
+                      </h3>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {specialist.price}
+                      </span>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{specialist.username}</p>
+                    
+                    <div className="flex items-center space-x-1 mb-3">
+                      <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-4 w-4 transition-colors duration-200 ${
+                            className={`h-4 w-4 ${
                               i < Math.floor(specialist.rating)
                                 ? "fill-yellow-400 text-yellow-400"
                                 : "text-gray-300"
                             }`}
                           />
                         ))}
-                        <span className="text-sm font-medium ml-1 text-gray-600">
-                          ({specialist.reviews})
-                        </span>
                       </div>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        {specialist.rating} ({specialist.reviews} reviews)
+                      </span>
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full shadow-sm ${
-                          specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
-                        }`} />
-                        <span className="text-sm text-gray-600 font-medium">{specialist.status}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </Button>
-                        <Link to={`/specialist/${specialist.id}`}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="p-2 hover:bg-gray-100 transition-all duration-200"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-3 border-t border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Starting from</span>
-                        <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                          {specialist.price}
-                        </span>
-                      </div>
+                    <div className="flex flex-wrap gap-1">
+                      {specialist.skills.split(', ').slice(0, 3).map((skill) => (
+                        <Badge key={skill} variant="secondary" className="text-xs">
+                          {skill}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </Link>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>

@@ -2,7 +2,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Play, Heart, MessageCircle, Share, X } from "lucide-react";
+import { Play, Heart, MessageCircle, Share, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 interface Reel {
@@ -14,14 +14,21 @@ interface Reel {
 
 interface ReelModalProps {
   reel: Reel | null;
+  reels: Reel[];
   isOpen: boolean;
   onClose: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-const ReelModal = ({ reel, isOpen, onClose }: ReelModalProps) => {
+const ReelModal = ({ reel, reels, isOpen, onClose, onNext, onPrevious }: ReelModalProps) => {
   const [isLiked, setIsLiked] = useState(false);
 
   if (!reel) return null;
+
+  const currentIndex = reels.findIndex(r => r.id === reel.id);
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex === reels.length - 1;
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -36,6 +43,18 @@ const ReelModal = ({ reel, isOpen, onClose }: ReelModalProps) => {
     console.log("Share reel:", reel.title);
   };
 
+  const handleNext = () => {
+    if (!isLast && onNext) {
+      onNext();
+    }
+  };
+
+  const handlePrevious = () => {
+    if (!isFirst && onPrevious) {
+      onPrevious();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg p-0 bg-black">
@@ -48,6 +67,29 @@ const ReelModal = ({ reel, isOpen, onClose }: ReelModalProps) => {
           >
             <X className="h-4 w-4" />
           </Button>
+
+          {/* Navigation arrows */}
+          {!isFirst && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handlePrevious}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+          )}
+
+          {!isLast && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNext}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          )}
           
           <div className="aspect-[9/16] bg-black flex items-center justify-center relative">
             <img 

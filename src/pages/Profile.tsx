@@ -22,13 +22,23 @@ const Profile = () => {
 
   const handleShareProfile = () => {
     console.log("Share profile clicked");
-    if (navigator.share) {
+    // Check if Web Share API is available and we're in a secure context
+    if (navigator.share && window.location.protocol === 'https:') {
       navigator.share({
         title: mockUser.name,
         text: `Check out ${mockUser.name}'s profile`,
         url: window.location.href,
+      }).catch((error) => {
+        console.log('Error sharing:', error);
+        // Fallback to clipboard
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied",
+          description: "Profile link copied to clipboard.",
+        });
       });
     } else {
+      // Fallback to clipboard
       navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",

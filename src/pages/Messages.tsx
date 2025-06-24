@@ -4,22 +4,34 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import ConversationsList from "@/components/messages/ConversationsList";
+import ChatModal from "@/components/messages/ChatModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageSquarePlus, Search } from "lucide-react";
 
+interface Conversation {
+  id: number;
+  user: { name: string; avatar: string };
+  lastMessage: string;
+  timestamp: string;
+  unread: number;
+}
+
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredConversations, setFilteredConversations] = useState(mockConversations);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const handleNewMessage = () => {
     console.log("Creating new message");
     // TODO: Navigate to new message composer
   };
 
-  const handleConversationClick = (conversation: any) => {
+  const handleConversationClick = (conversation: Conversation) => {
     console.log("Opening conversation:", conversation);
-    // TODO: Navigate to chat view
+    setSelectedConversation(conversation);
+    setIsChatModalOpen(true);
   };
 
   const handleSearch = (query: string) => {
@@ -64,6 +76,12 @@ const Messages = () => {
             onConversationClick={handleConversationClick}
           />
         </div>
+
+        <ChatModal
+          conversation={selectedConversation}
+          isOpen={isChatModalOpen}
+          onClose={() => setIsChatModalOpen(false)}
+        />
 
         <BottomNavigation activeTab="messages" />
       </div>
