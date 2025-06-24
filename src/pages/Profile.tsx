@@ -83,6 +83,7 @@ const Profile = () => {
             
             <TabsContent value="settings" className="mt-6">
               <SettingsTab 
+                onEditProfile={handleEditProfile}
                 onManagePrivacy={handleManagePrivacy}
                 onNotifications={handleNotifications}
               />

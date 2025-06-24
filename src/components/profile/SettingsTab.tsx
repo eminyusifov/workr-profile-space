@@ -4,17 +4,27 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface SettingsTabProps {
   onEditProfile?: () => void;
+  onManagePrivacy?: () => void;
+  onNotifications?: () => void;
 }
 
-const SettingsTab = ({ onEditProfile }: SettingsTabProps) => {
+const SettingsTab = ({ onEditProfile, onManagePrivacy, onNotifications }: SettingsTabProps) => {
   const handleManagePrivacy = () => {
     console.log("Managing privacy settings...");
-    alert("Privacy settings functionality coming soon!");
+    if (onManagePrivacy) {
+      onManagePrivacy();
+    } else {
+      alert("Privacy settings functionality coming soon!");
+    }
   };
 
   const handleConfigureNotifications = () => {
     console.log("Configuring notifications...");
-    alert("Notification settings functionality coming soon!");
+    if (onNotifications) {
+      onNotifications();
+    } else {
+      alert("Notification settings functionality coming soon!");
+    }
   };
 
   return (
