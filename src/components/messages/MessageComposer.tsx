@@ -32,9 +32,11 @@ const MessageComposer = ({ isOpen, onClose, recipientName = "Contractor", recipi
 
     console.log("Sending message:", { subject, message, recipientId });
     
+    // Show success toast that auto-dismisses
     toast({
       title: "Message Sent!",
       description: `Your message has been sent to ${recipientName}.`,
+      duration: 3000, // Auto-dismiss after 3 seconds
     });
 
     setSubject("");

@@ -9,9 +9,8 @@ import ReelsSection from "@/components/messages/ReelsSection";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SpecialistGrid from "@/components/shared/SpecialistGrid";
 import LoadingGrid from "@/components/shared/LoadingGrid";
-import FloatingActionButton from "@/components/shared/FloatingActionButton";
 import { useSpecialists } from "@/hooks/useSpecialists";
-import EnhancedSearch from "@/components/shared/EnhancedSearch";
+import AdvancedSearch from "@/components/shared/AdvancedSearch";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,13 +107,13 @@ const Index = () => {
               Connect with talented specialists across design, development, and digital marketing. Build your dream team today.
             </p>
 
-            {/* Enhanced Search */}
+            {/* Advanced Search */}
             <div className="max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-              <EnhancedSearch
+              <AdvancedSearch
                 placeholder="Search for specialists, skills, or services..."
                 value={searchQuery}
                 onChange={setSearchQuery}
-                showTrending={true}
+                showAdvanced={true}
               />
             </div>
 
@@ -154,7 +153,6 @@ const Index = () => {
           />
         )}
 
-        <FloatingActionButton />
         <BottomNavigation activeTab="main" />
       </div>
     </ThemeProvider>

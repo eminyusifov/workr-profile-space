@@ -7,90 +7,118 @@ import ConversationsList from "@/components/messages/ConversationsList";
 import ChatModal from "@/components/messages/ChatModal";
 import MessageComposer from "@/components/messages/MessageComposer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MessageSquarePlus, Search } from "lucide-react";
-
-interface Conversation {
-  id: number;
-  user: { name: string; avatar: string };
-  lastMessage: string;
-  timestamp: string;
-  unread: number;
-}
+import { MessageCircle, Plus } from "lucide-react";
+import { useSpecialists } from "@/hooks/useSpecialists";
 
 const Messages = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredConversations, setFilteredConversations] = useState(mockConversations);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-  const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
+  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
+  const [showNewMessage, setShowNewMessage] = useState(false);
+  const [showRecipientSelector, setShowRecipientSelector] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState<any>(null);
+  const { specialists } = useSpecialists();
+
+  const handleConversationClick = (conversationId: number) => {
+    setSelectedConversationId(conversationId);
+  };
 
   const handleNewMessage = () => {
-    setIsNewMessageOpen(true);
+    setShowRecipientSelector(true);
   };
 
-  const handleConversationClick = (conversation: Conversation) => {
-    console.log("Opening conversation:", conversation);
-    setSelectedConversation(conversation);
-    setIsChatModalOpen(true);
+  const handleRecipientSelect = (specialist: any) => {
+    setSelectedRecipient(specialist);
+    setShowRecipientSelector(false);
+    setShowNewMessage(true);
   };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const filtered = mockConversations.filter(conversation =>
-      conversation.user.name.toLowerCase().includes(query.toLowerCase()) ||
-      conversation.lastMessage.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredConversations(filtered);
-  };
-
-  const rightContent = (
-    <Button variant="ghost" size="sm" onClick={handleNewMessage}>
-      <MessageSquarePlus className="h-5 w-5" />
-    </Button>
-  );
 
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <PageHeader 
           title="Messages" 
-          rightContent={rightContent}
+          showBackButton 
+          rightContent={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNewMessage}
+              className="h-8 w-8 p-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          }
         />
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search conversations..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              />
-            </div>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Messages</h1>
+            <Button 
+              onClick={handleNewMessage}
+              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>New Message</span>
+            </Button>
           </div>
 
-          <ConversationsList 
-            conversations={filteredConversations}
-            onConversationClick={handleConversationClick}
-          />
+          <ConversationsList onConversationClick={handleConversationClick} />
         </div>
 
-        <ChatModal
-          conversation={selectedConversation}
-          isOpen={isChatModalOpen}
-          onClose={() => {
-            setIsChatModalOpen(false);
-            setSelectedConversation(null);
-          }}
-        />
+        {/* Chat Modal */}
+        {selectedConversationId && (
+          <ChatModal
+            isOpen={!!selectedConversationId}
+            onClose={() => setSelectedConversationId(null)}
+            conversationId={selectedConversationId}
+          />
+        )}
 
+        {/* Recipient Selector Modal */}
+        {showRecipientSelector && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Recipient</h2>
+              <div className="space-y-2">
+                {specialists.map((specialist) => (
+                  <button
+                    key={specialist.id}
+                    onClick={() => handleRecipientSelect(specialist)}
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <img 
+                        src={specialist.profileImage} 
+                        alt={specialist.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">{specialist.name}</div>
+                        <div className="text-sm text-gray-500">{specialist.skills}</div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowRecipientSelector(false)} 
+                className="w-full mt-4"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Message Composer */}
         <MessageComposer
-          isOpen={isNewMessageOpen}
-          onClose={() => setIsNewMessageOpen(false)}
-          recipientName="New Contact"
+          isOpen={showNewMessage}
+          onClose={() => {
+            setShowNewMessage(false);
+            setSelectedRecipient(null);
+          }}
+          recipientName={selectedRecipient?.name}
+          recipientId={selectedRecipient?.id}
         />
 
         <BottomNavigation activeTab="messages" />
@@ -98,49 +126,5 @@ const Messages = () => {
     </ThemeProvider>
   );
 };
-
-// Mock conversations data
-const mockConversations = [
-  {
-    id: 1,
-    user: { 
-      name: "Sarah Johnson", 
-      avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" 
-    },
-    lastMessage: "Thanks for the project proposal! I'll review it today.",
-    timestamp: "2m ago",
-    unread: 2
-  },
-  {
-    id: 2,
-    user: { 
-      name: "Alex Chen", 
-      avatar: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png" 
-    },
-    lastMessage: "The website design looks great! When can we start?",
-    timestamp: "1h ago",
-    unread: 0
-  },
-  {
-    id: 3,
-    user: { 
-      name: "Maria Rodriguez", 
-      avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" 
-    },
-    lastMessage: "I have some questions about the branding guidelines.",
-    timestamp: "3h ago",
-    unread: 1
-  },
-  {
-    id: 4,
-    user: { 
-      name: "David Kim", 
-      avatar: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png" 
-    },
-    lastMessage: "Project completed! Please check the final deliverables.",
-    timestamp: "1d ago",
-    unread: 0
-  }
-];
 
 export default Messages;

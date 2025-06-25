@@ -30,7 +30,6 @@ const AdvancedSearch = ({
   onAdvancedSearch
 }: AdvancedSearchProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     skills: [],
@@ -48,28 +47,10 @@ const AdvancedSearch = ({
     "SEO", "Social Media", "Content Writing", "Translation", "Animation"
   ];
 
-  const trendingSearches = [
-    "UX/UI Designer",
-    "React Developer", 
-    "Graphic Designer",
-    "Full Stack Developer",
-    "Mobile App Designer",
-    "Logo Designer",
-    "Video Editor",
-    "Content Writer"
-  ];
-
-  const recentSearches = [
-    "Logo designer",
-    "Web developer", 
-    "Brand identity",
-    "React specialist"
-  ];
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
+        setShowFilters(false);
       }
     };
 
@@ -102,11 +83,9 @@ const AdvancedSearch = ({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onFocus={() => {
-            setIsFocused(true);
-            setShowSuggestions(true);
-          }}
-          className={`pl-12 pr-24 h-14 rounded-2xl border-2 transition-all duration-300 text-base ${
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={`pl-12 pr-16 h-14 rounded-2xl border-2 transition-all duration-300 text-base ${
             isFocused 
               ? 'border-blue-500 shadow-lg bg-white ring-2 ring-blue-100' 
               : 'border-gray-200 bg-white/80 hover:border-gray-300'
@@ -132,25 +111,15 @@ const AdvancedSearch = ({
                 showFilters ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
               }`}
             >
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
-          )}
-          {onFilterClick && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onFilterClick}
-              className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
-            >
               <Filter className="h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
 
-      {/* Advanced Filters Panel */}
+      {/* Advanced Filters Panel - Higher z-index to avoid being hidden */}
       {showFilters && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 p-6 animate-fade-in">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 z-[70] p-6 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Skills Filter */}
             <div>
@@ -219,82 +188,6 @@ const AdvancedSearch = ({
             >
               Apply Filters
             </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Search Suggestions */}
-      {showSuggestions && (isFocused || value) && !showFilters && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 animate-fade-in">
-          <div className="p-4">
-            {value ? (
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Search Results</h4>
-                <div className="space-y-2">
-                  {trendingSearches
-                    .filter(item => item.toLowerCase().includes(value.toLowerCase()))
-                    .slice(0, 4)
-                    .map((item, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          onChange(item);
-                          setShowSuggestions(false);
-                        }}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors group"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Search className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                          <span className="text-gray-700 group-hover:text-blue-700">{item}</span>
-                        </div>
-                      </button>
-                    ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentSearches.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">Recent Searches</h4>
-                    <div className="space-y-1">
-                      {recentSearches.map((item, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            onChange(item);
-                            setShowSuggestions(false);
-                          }}
-                          className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors group"
-                        >
-                          <div className="flex items-center space-x-3">
-                            <Clock className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                            <span className="text-gray-600">{item}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-3">Popular Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {popularSkills.slice(0, 6).map((skill, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          onChange(skill);
-                          setShowSuggestions(false);
-                        }}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm hover:bg-blue-100 transition-colors"
-                      >
-                        {skill}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

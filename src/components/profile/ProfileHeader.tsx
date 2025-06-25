@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Edit, Heart, Eye, Star, UserPlus, Share, Calendar, MapPin } from "lucide-react";
+import { Heart, Eye, Star, UserPlus, Share, Calendar, MapPin } from "lucide-react";
 
 interface User {
   name: string;
@@ -38,16 +38,8 @@ const ProfileHeader = ({ user, isOwnProfile = true, onEditProfile, onShareProfil
     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-0 p-8 mb-8 relative overflow-hidden">
       {/* Animated background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 animate-gradient-shift"></div>
-      
-      {/* Enhanced cover image with overlay */}
-      <div className="relative h-40 bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-700 rounded-2xl mb-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/30"></div>
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-6 sm:space-y-0 sm:space-x-8 -mt-16 relative z-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-6 sm:space-y-0 sm:space-x-8 relative z-10">
         <Avatar className="h-28 w-28 border-4 border-white shadow-xl ring-4 ring-white/20">
           <AvatarImage src={user.avatar} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl">
@@ -83,24 +75,14 @@ const ProfileHeader = ({ user, isOwnProfile = true, onEditProfile, onShareProfil
             
             <div className="flex flex-wrap gap-2">
               {isOwnProfile ? (
-                <>
-                  <Button 
-                    variant="outline" 
-                    onClick={onEditProfile} 
-                    className="flex items-center space-x-2 bg-white/80 hover:bg-white border-2 hover:border-blue-300 transition-all duration-300"
-                  >
-                    <Edit className="h-4 w-4" />
-                    <span>Edit Profile</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={onShareProfile} 
-                    className="flex items-center space-x-2 bg-white/80 hover:bg-white border-2 hover:border-blue-300 transition-all duration-300"
-                  >
-                    <Share className="h-4 w-4" />
-                    <span>Share</span>
-                  </Button>
-                </>
+                <Button 
+                  variant="outline" 
+                  onClick={onShareProfile} 
+                  className="flex items-center space-x-2 bg-white/80 hover:bg-white border-2 hover:border-blue-300 transition-all duration-300"
+                >
+                  <Share className="h-4 w-4" />
+                  <span>Share</span>
+                </Button>
               ) : (
                 <>
                   <Button
@@ -180,7 +162,7 @@ const ProfileHeader = ({ user, isOwnProfile = true, onEditProfile, onShareProfil
               <Badge 
                 key={skill} 
                 variant="secondary" 
-                className="bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 border border-gray-200 hover:border-blue-300 transition-all duration-300 px-3 py-1 animate-fade-in"
+                className="bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 border border-gray-200 hover:border-blue-300 transition-all duration-300 px-3 py-1 animate-fade-in cursor-pointer hover:scale-105"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {skill}

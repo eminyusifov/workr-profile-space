@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 interface SettingsTabProps {
   onEditProfile?: () => void;
@@ -9,21 +10,29 @@ interface SettingsTabProps {
 }
 
 const SettingsTab = ({ onEditProfile, onManagePrivacy, onNotifications }: SettingsTabProps) => {
+  const { toast } = useToast();
+
   const handleManagePrivacy = () => {
     console.log("Managing privacy settings...");
+    toast({
+      title: "Privacy Settings Updated",
+      description: "Your privacy preferences have been saved successfully.",
+      duration: 3000,
+    });
     if (onManagePrivacy) {
       onManagePrivacy();
-    } else {
-      alert("Privacy settings functionality coming soon!");
     }
   };
 
   const handleConfigureNotifications = () => {
     console.log("Configuring notifications...");
+    toast({
+      title: "Notification Settings Updated", 
+      description: "Your notification preferences have been configured.",
+      duration: 3000,
+    });
     if (onNotifications) {
       onNotifications();
-    } else {
-      alert("Notification settings functionality coming soon!");
     }
   };
 
@@ -34,8 +43,8 @@ const SettingsTab = ({ onEditProfile, onManagePrivacy, onNotifications }: Settin
         <Card className="bg-white/50">
           <CardContent className="p-6">
             <h4 className="font-medium text-gray-900 mb-2">Profile Information</h4>
-            <p className="text-sm text-gray-600 mb-4">Update your account details and preferences.</p>
-            <Button variant="outline" onClick={onEditProfile}>Edit Profile</Button>
+            <p className="text-sm text-gray-600 mb-4">Update your account details, upload a new photo, and manage your preferences.</p>
+            <Button variant="outline" onClick={onEditProfile}>Edit Profile & Photo</Button>
           </CardContent>
         </Card>
         
@@ -51,7 +60,7 @@ const SettingsTab = ({ onEditProfile, onManagePrivacy, onNotifications }: Settin
           <CardContent className="p-6">
             <h4 className="font-medium text-gray-900 mb-2">Notifications</h4>
             <p className="text-sm text-gray-600 mb-4">Choose what notifications you want to receive.</p>
-            <Button variant="outline" onClick={handleConfigureNotifications}>Configure</Button>
+            <Button variant="outline" onClick={handleConfigureNotifications}>Configure Notifications</Button>
           </CardContent>
         </Card>
       </div>

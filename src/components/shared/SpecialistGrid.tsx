@@ -107,19 +107,22 @@ const SpecialistGrid = ({ specialists, title }: SpecialistGridProps) => {
                       <span className="text-xs text-gray-400">({specialist.reviews})</span>
                     </div>
                     
-                    <Badge variant="outline" className="text-xs">
-                      {specialist.price}
-                    </Badge>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full mt-2 text-xs"
-                      onClick={(e) => handleMessageClick(specialist, e)}
-                    >
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      Message
-                    </Button>
+                    {/* Price and Message on same line */}
+                    <div className="flex items-center justify-between space-x-2 mt-3">
+                      <Badge variant="outline" className="text-sm font-bold text-blue-600 border-blue-200">
+                        {specialist.price}
+                      </Badge>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs h-8 px-3"
+                        onClick={(e) => handleMessageClick(specialist, e)}
+                      >
+                        <MessageCircle className="h-3 w-3 mr-1" />
+                        Message
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

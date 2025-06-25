@@ -1,141 +1,138 @@
 
 import { useState } from "react";
-import { Bell, Search, Menu, ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Settings, Bell, MessageCircle } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useFavorites } from "@/components/shared/FavoritesProvider";
-import ThemeToggle from "./ThemeToggle";
+import { useUserType } from "@/contexts/UserTypeContext";
+import UserTypeSelector from "@/components/shared/UserTypeSelector";
 
 interface PageHeaderProps {
   title?: string;
-  showSettings?: boolean;
-  showNotifications?: boolean;
-  showSearch?: boolean;
   showBackButton?: boolean;
+  showSettings?: boolean;
   rightContent?: React.ReactNode;
-  notificationCount?: number;
 }
 
-const PageHeader = ({ 
-  title = "Workr", 
-  showSettings = false, 
-  showNotifications = true,
-  showSearch = false,
-  showBackButton = false,
-  rightContent,
-  notificationCount = 3
-}: PageHeaderProps) => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+const PageHeader = ({ title, showBackButton = false, showSettings = false, rightContent }: PageHeaderProps) => {
   const navigate = useNavigate();
   const { favoritesCount } = useFavorites();
+  const { userType, setUserType } = useUserType();
+  const [showUserTypeSelector, setShowUserTypeSelector] = useState(false);
 
-  const handleBackClick = () => {
-    navigate(-1);
+  const handleAvatarClick = () => {
+    setShowUserTypeSelector(true);
   };
 
-  const handleNotificationClick = () => {
-    navigate('/notifications');
+  const handleUserTypeChange = (newUserType: 'customer' | 'contractor') => {
+    setUserType(newUserType);
+    setShowUserTypeSelector(false);
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Left side */}
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
-            {showBackButton ? (
-              <Button variant="ghost" size="sm" onClick={handleBackClick}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            ) : (
-              <Button variant="ghost" size="sm" className="md:hidden">
-                <Menu className="h-5 w-5" />
+            {showBackButton && (
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {title}
-            </h1>
+            {title && (
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h1>
+            )}
           </div>
 
-          {/* Center search */}
-          {showSearch && (
-            <div className="hidden md:flex flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search..."
-                  className="pl-10 bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Right side */}
-          <div className="flex items-center space-x-2">
-            {/* Mobile search button */}
-            {showSearch && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="md:hidden"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-              >
-                <Search className="h-5 w-5" />
+          <div className="flex items-center space-x-4">
+            {showSettings && <ThemeToggle />}
+            
+            {/* Messages */}
+            <Link to="/messages">
+              <Button variant="ghost" size="sm" className="relative">
+                <MessageCircle className="h-5 w-5" />
               </Button>
-            )}
+            </Link>
 
-            <ThemeToggle />
-
-            {showNotifications && (
-              <Button variant="ghost" size="sm" className="relative" onClick={handleNotificationClick}>
+            {/* Notifications */}
+            <Link to="/notifications">
+              <Button variant="ghost" size="sm" className="relative">
                 <Bell className="h-5 w-5" />
-                {notificationCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0 min-w-0"
-                  >
-                    {notificationCount > 9 ? '9+' : notificationCount}
+              </Button>
+            </Link>
+
+            {/* Favorites */}
+            <Link to="/favorites">
+              <Button variant="ghost" size="sm" className="relative">
+                <span className="text-sm">❤️</span>
+                {favoritesCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500 text-white flex items-center justify-center">
+                    {favoritesCount}
                   </Badge>
                 )}
               </Button>
-            )}
+            </Link>
 
+            {/* Settings - only show on main page */}
             {showSettings && (
-              <Link to="/favorites">
-                <Button variant="ghost" size="sm" className="relative">
-                  <Heart className="h-5 w-5" />
-                  {favoritesCount > 0 && (
-                    <Badge 
-                      variant="secondary" 
-                      className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0 min-w-0"
-                    >
-                      {favoritesCount}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-5 w-5" />
+              </Button>
             )}
 
-            {rightContent}
+            {/* User Avatar - clickable for user type switching */}
+            {rightContent ? (
+              <div onClick={handleAvatarClick} className="cursor-pointer">
+                {rightContent}
+              </div>
+            ) : (
+              <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all" onClick={handleAvatarClick}>
+                <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+            )}
           </div>
         </div>
+      </header>
 
-        {/* Mobile search bar */}
-        {showSearch && isSearchOpen && (
-          <div className="md:hidden pb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search..."
-                className="pl-10 bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-blue-500"
-              />
+      {/* User Type Selector Modal */}
+      {showUserTypeSelector && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Switch User Type</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Current: <span className="font-medium capitalize">{userType}</span>
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => handleUserTypeChange('customer')}
+                variant={userType === 'customer' ? 'default' : 'outline'}
+                className="w-full justify-start"
+              >
+                <span className="mr-2">👤</span>
+                Customer - Hire contractors and post jobs
+              </Button>
+              <Button
+                onClick={() => handleUserTypeChange('contractor')}
+                variant={userType === 'contractor' ? 'default' : 'outline'}
+                className="w-full justify-start"
+              >
+                <span className="mr-2">💼</span>
+                Contractor - Showcase portfolio and find work
+              </Button>
+            </div>
+            <div className="flex space-x-3 mt-6">
+              <Button variant="outline" onClick={() => setShowUserTypeSelector(false)} className="flex-1">
+                Cancel
+              </Button>
             </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+      )}
+    </>
   );
 };
 
