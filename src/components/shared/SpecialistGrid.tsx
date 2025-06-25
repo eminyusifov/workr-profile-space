@@ -1,23 +1,25 @@
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Star, Heart, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFavorites } from "@/components/shared/FavoritesProvider";
 import { useToast } from "@/hooks/use-toast";
+import MessageComposer from "@/components/messages/MessageComposer";
 
 interface Specialist {
   id: number;
   name: string;
-  username: string;
+  skills: string;
+  experience: string;
   rating: number;
   reviews: number;
-  status: string;
-  skills: string;
   price: string;
-  avatar: string;
+  profileImage: string;
+  status: string;
 }
 
 interface SpecialistGridProps {
@@ -26,150 +28,112 @@ interface SpecialistGridProps {
 }
 
 const SpecialistGrid = ({ specialists, title }: SpecialistGridProps) => {
-  const [favoriteSpecialists, setFavoriteSpecialists] = useState<number[]>([]);
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const { toast } = useToast();
+  const [messageComposerOpen, setMessageComposerOpen] = useState(false);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<Specialist | null>(null);
 
-  const handleToggleFavorite = (specialistId: number) => {
-    setFavoriteSpecialists(prev => 
-      prev.includes(specialistId) 
-        ? prev.filter(id => id !== specialistId)
-        : [...prev, specialistId]
-    );
+  const handleHeartClick = (specialist: Specialist, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     
-    const isFavorited = !favoriteSpecialists.includes(specialistId);
-    toast({
-      title: isFavorited ? "Added to Favorites" : "Removed from Favorites",
-      description: isFavorited ? "Specialist added to your favorites." : "Specialist removed from your favorites.",
-    });
+    if (favorites.includes(specialist.id)) {
+      removeFromFavorites(specialist.id);
+      toast({
+        title: "Removed from favorites",
+        description: `${specialist.name} removed from your favorites.`,
+      });
+    } else {
+      addToFavorites(specialist.id);
+      toast({
+        title: "Added to favorites",
+        description: `${specialist.name} added to your favorites.`,
+      });
+    }
   };
 
-  const handleMessageClick = (specialist: Specialist) => {
-    console.log("Opening message to:", specialist.name);
-    toast({
-      title: "Message",
-      description: `Opening chat with ${specialist.name}...`,
-    });
-    // Navigate to messages page or open chat modal
+  const handleMessageClick = (specialist: Specialist, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedSpecialist(specialist);
+    setMessageComposerOpen(true);
   };
-
-  if (!specialists || specialists.length === 0) {
-    return (
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{title}</h2>
-          <p className="text-gray-600 dark:text-gray-300">No specialists found matching your criteria.</p>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">{title}</h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
+          <Link to="/catalog">
+            <Button variant="outline" className="hover:bg-blue-50 hover:border-blue-300">
+              View All
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {specialists.map((specialist) => (
-            <Card key={specialist.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                    <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                      <AvatarImage src={specialist.avatar} />
-                      <AvatarFallback className="text-lg font-semibold">
-                        {specialist.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
+            <Link key={specialist.id} to={`/specialist/${specialist.id}`}>
+              <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full">
+                <CardContent className="p-4">
+                  <div className="relative mb-3">
+                    <Avatar className="w-16 h-16 mx-auto">
+                      <AvatarImage src={specialist.profileImage} />
+                      <AvatarFallback>{specialist.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
-                  </div>
-                  
-                  {/* Action buttons */}
-                  <div className="absolute top-2 right-2 flex flex-col gap-2">
+                    
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white rounded-full"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleToggleFavorite(specialist.id);
-                      }}
+                      className="absolute top-0 right-0 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => handleHeartClick(specialist, e)}
                     >
-                      <Heart className={`h-4 w-4 ${favoriteSpecialists.includes(specialist.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white rounded-full"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleMessageClick(specialist);
-                      }}
-                    >
-                      <MessageCircle className="h-4 w-4 text-gray-600" />
+                      <Heart className={`h-4 w-4 ${favorites.includes(specialist.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
                     </Button>
                   </div>
 
-                  {/* Status indicator */}
-                  <div className="absolute bottom-2 left-2">
-                    <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
-                      specialist.status === "Free" 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
-                      }`} />
-                      <span>{specialist.status}</span>
+                  <div className="text-center space-y-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
+                      {specialist.name}
+                    </h3>
+                    
+                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                      {specialist.skills}
+                    </p>
+                    
+                    <div className="flex items-center justify-center space-x-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-xs text-gray-600">{specialist.rating}</span>
+                      <span className="text-xs text-gray-400">({specialist.reviews})</span>
                     </div>
+                    
+                    <Badge variant="outline" className="text-xs">
+                      {specialist.price}
+                    </Badge>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2 text-xs"
+                      onClick={(e) => handleMessageClick(specialist, e)}
+                    >
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                      Message
+                    </Button>
                   </div>
-                </div>
-                
-                <Link to={`/specialist/${specialist.id}`} className="block">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {specialist.name}
-                      </h3>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {specialist.price}
-                      </span>
-                    </div>
-                    
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{specialist.username}</p>
-                    
-                    <div className="flex items-center space-x-1 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < Math.floor(specialist.rating)
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        {specialist.rating} ({specialist.reviews} reviews)
-                      </span>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-1">
-                      {specialist.skills.split(', ').slice(0, 3).map((skill) => (
-                        <Badge key={skill} variant="secondary" className="text-xs">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </Link>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
+
+      <MessageComposer
+        isOpen={messageComposerOpen}
+        onClose={() => setMessageComposerOpen(false)}
+        recipientName={selectedSpecialist?.name}
+        recipientId={selectedSpecialist?.id}
+      />
     </section>
   );
 };

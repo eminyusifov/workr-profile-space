@@ -5,6 +5,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import ConversationsList from "@/components/messages/ConversationsList";
 import ChatModal from "@/components/messages/ChatModal";
+import MessageComposer from "@/components/messages/MessageComposer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageSquarePlus, Search } from "lucide-react";
@@ -22,10 +23,10 @@ const Messages = () => {
   const [filteredConversations, setFilteredConversations] = useState(mockConversations);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
 
   const handleNewMessage = () => {
-    console.log("Creating new message");
-    // TODO: Navigate to new message composer
+    setIsNewMessageOpen(true);
   };
 
   const handleConversationClick = (conversation: Conversation) => {
@@ -80,7 +81,16 @@ const Messages = () => {
         <ChatModal
           conversation={selectedConversation}
           isOpen={isChatModalOpen}
-          onClose={() => setIsChatModalOpen(false)}
+          onClose={() => {
+            setIsChatModalOpen(false);
+            setSelectedConversation(null);
+          }}
+        />
+
+        <MessageComposer
+          isOpen={isNewMessageOpen}
+          onClose={() => setIsNewMessageOpen(false)}
+          recipientName="New Contact"
         />
 
         <BottomNavigation activeTab="messages" />

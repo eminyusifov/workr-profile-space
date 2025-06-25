@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, Link } from "react-router-dom";
+import { useFavorites } from "@/components/shared/FavoritesProvider";
 import ThemeToggle from "./ThemeToggle";
 
 interface PageHeaderProps {
@@ -24,18 +25,18 @@ const PageHeader = ({
   showSearch = false,
   showBackButton = false,
   rightContent,
-  notificationCount = 0
+  notificationCount = 3
 }: PageHeaderProps) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const { favoritesCount } = useFavorites();
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleNotificationClick = () => {
-    console.log("Notifications clicked");
-    // TODO: Navigate to notifications page or show dropdown
+    navigate('/notifications');
   };
 
   return (
@@ -103,8 +104,16 @@ const PageHeader = ({
 
             {showSettings && (
               <Link to="/favorites">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="relative">
                   <Heart className="h-5 w-5" />
+                  {favoritesCount > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0 min-w-0"
+                    >
+                      {favoritesCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
             )}

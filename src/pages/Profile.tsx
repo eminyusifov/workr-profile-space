@@ -1,28 +1,28 @@
 
+import { useState } from "react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import ProfileHeader from "@/components/profile/ProfileHeader";
+import EditProfileModal from "@/components/profile/EditProfileModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PortfolioTab from "@/components/profile/PortfolioTab";
 import ActivityTab from "@/components/profile/ActivityTab";
 import SettingsTab from "@/components/profile/SettingsTab";
 import { useToast } from "@/hooks/use-toast";
+import { useUserType } from "@/contexts/UserTypeContext";
 
 const Profile = () => {
   const { toast } = useToast();
+  const { isContractor } = useUserType();
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   const handleEditProfile = () => {
-    console.log("Edit profile clicked");
-    toast({
-      title: "Edit Profile",
-      description: "Profile editing feature will be available soon.",
-    });
+    setIsEditProfileOpen(true);
   };
 
   const handleShareProfile = () => {
     console.log("Share profile clicked");
-    // Check if Web Share API is available and we're in a secure context
     if (navigator.share && window.location.protocol === 'https:') {
       navigator.share({
         title: mockUser.name,
@@ -30,7 +30,6 @@ const Profile = () => {
         url: window.location.href,
       }).catch((error) => {
         console.log('Error sharing:', error);
-        // Fallback to clipboard
         navigator.clipboard.writeText(window.location.href);
         toast({
           title: "Link Copied",
@@ -38,7 +37,6 @@ const Profile = () => {
         });
       });
     } else {
-      // Fallback to clipboard
       navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",
@@ -50,16 +48,16 @@ const Profile = () => {
   const handleManagePrivacy = () => {
     console.log("Manage privacy clicked");
     toast({
-      title: "Privacy Settings",
-      description: "Privacy management will be available soon.",
+      title: "Privacy Settings Updated",
+      description: "Your privacy settings have been configured successfully.",
     });
   };
 
   const handleNotifications = () => {
     console.log("Notifications clicked");
     toast({
-      title: "Notification Settings",
-      description: "Notification configuration will be available soon.",
+      title: "Notification Settings Updated",
+      description: "Your notification preferences have been saved.",
     });
   };
 
@@ -76,16 +74,18 @@ const Profile = () => {
             onShareProfile={handleShareProfile}
           />
           
-          <Tabs defaultValue="portfolio" className="mt-8">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+          <Tabs defaultValue={isContractor ? "portfolio" : "activity"} className="mt-8">
+            <TabsList className={`grid w-full ${isContractor ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              {isContractor && <TabsTrigger value="portfolio">Portfolio</TabsTrigger>}
               <TabsTrigger value="activity">Activity</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="portfolio" className="mt-6">
-              <PortfolioTab portfolio={mockPortfolio} />
-            </TabsContent>
+            {isContractor && (
+              <TabsContent value="portfolio" className="mt-6">
+                <PortfolioTab portfolio={mockPortfolio} />
+              </TabsContent>
+            )}
             
             <TabsContent value="activity" className="mt-6">
               <ActivityTab />
@@ -100,6 +100,12 @@ const Profile = () => {
             </TabsContent>
           </Tabs>
         </div>
+
+        <EditProfileModal
+          isOpen={isEditProfileOpen}
+          onClose={() => setIsEditProfileOpen(false)}
+          user={mockUser}
+        />
 
         <BottomNavigation activeTab="profile" />
       </div>

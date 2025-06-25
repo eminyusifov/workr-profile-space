@@ -4,24 +4,26 @@ import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Heart, MessageCircle, Send } from "lucide-react";
+import { Star, Heart, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import WorkModal from "@/components/profile/WorkModal";
+import MessageComposer from "@/components/messages/MessageComposer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useFavorites } from "@/components/shared/FavoritesProvider";
 
 const SpecialistProfile = () => {
   const { id } = useParams();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("works");
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const [selectedWork, setSelectedWork] = useState<any>(null);
   const [favoriteWorks, setFavoriteWorks] = useState<number[]>([]);
   const [userRating, setUserRating] = useState(0);
+  const [isMessageComposerOpen, setIsMessageComposerOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   // Mock data - in real app, this would come from API
   const specialist = {
@@ -41,7 +43,7 @@ const SpecialistProfile = () => {
       { 
         id: 1, 
         title: "Book Cover Design", 
-        category: "Graphic Design",
+        category: "Graphic",
         progress: "70%", 
         likes: 124,
         description: "A modern book cover design with clean typography and engaging visuals.",
@@ -55,7 +57,7 @@ const SpecialistProfile = () => {
       { 
         id: 2, 
         title: "Brand Identity", 
-        category: "Branding",
+        category: "UX/UI",
         progress: "70%", 
         likes: 89,
         description: "Complete brand identity package including logo, colors, and guidelines.",
@@ -69,7 +71,7 @@ const SpecialistProfile = () => {
       { 
         id: 3, 
         title: "UI Design", 
-        category: "UX/UI Design",
+        category: "Photo",
         progress: "70%", 
         likes: 156,
         description: "Modern UI design for mobile application with intuitive user experience.",
@@ -80,22 +82,16 @@ const SpecialistProfile = () => {
           rating: 4.6
         }
       },
-    ],
-    schedule: [
-      { date: "2024-01-15", status: "busy" },
-      { date: "2024-01-16", status: "available" },
-      { date: "2024-01-17", status: "busy" },
-      { date: "2024-01-18", status: "available" },
-      { date: "2024-01-19", status: "available" },
     ]
   };
 
+  const categories = ["All", "SMM", "Graphic", "UX/UI", "Photo"];
+  const filteredPortfolio = selectedCategory === "All" 
+    ? specialist.portfolio 
+    : specialist.portfolio.filter(work => work.category === selectedCategory);
+
   const handleWriteClick = () => {
-    console.log("Write message clicked");
-    toast({
-      title: "Message",
-      description: "Opening message composer...",
-    });
+    setIsMessageComposerOpen(true);
   };
 
   const handleWorkClick = (work: any) => {
@@ -119,10 +115,25 @@ const SpecialistProfile = () => {
   };
 
   const handleHeartClick = () => {
-    setIsFavorited(!isFavorited);
+    const isCurrentlyFavorited = favorites.includes(specialist.id);
+    
+    if (isCurrentlyFavorited) {
+      removeFromFavorites(specialist.id);
+    } else {
+      addToFavorites(specialist.id);
+    }
+    
     toast({
-      title: isFavorited ? "Removed from Favorites" : "Added to Favorites",
-      description: isFavorited ? "Specialist removed from your favorites." : "Specialist added to your favorites.",
+      title: isCurrentlyFavorited ? "Removed from Favorites" : "Added to Favorites",
+      description: isCurrentlyFavorited ? "Specialist removed from your favorites." : "Specialist added to your favorites.",
+    });
+  };
+
+  const handleTagClick = (category: string) => {
+    setSelectedCategory(category);
+    toast({
+      title: "Filter Applied",
+      description: `Showing ${category === "All" ? "all" : category} works.`,
     });
   };
 
@@ -131,10 +142,10 @@ const SpecialistProfile = () => {
       <Button 
         variant="ghost" 
         size="sm" 
-        className={`hover:bg-red-50 hover:text-red-600 ${isFavorited ? 'text-red-600' : ''}`}
+        className={`hover:bg-red-50 hover:text-red-600 ${favorites.includes(specialist.id) ? 'text-red-600' : ''}`}
         onClick={handleHeartClick}
       >
-        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+        <Heart className={`h-4 w-4 ${favorites.includes(specialist.id) ? 'fill-current' : ''}`} />
       </Button>
     </div>
   );
@@ -227,45 +238,65 @@ const SpecialistProfile = () => {
               </div>
             </div>
 
-            {/* Compact Calendar in one line */}
+            {/* Prettier Calendar in one line */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Availability</h3>
-              <div className="flex space-x-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Availability (Next 14 Days)</h3>
+              <div className="flex space-x-1 overflow-x-auto pb-2">
                 {Array.from({ length: 14 }, (_, i) => {
-                  const dayNumber = i + 1;
+                  const date = new Date();
+                  date.setDate(date.getDate() + i);
+                  const dayNumber = date.getDate();
+                  const dayName = date.toLocaleDateString('en', { weekday: 'short' });
                   const isAvailable = Math.random() > 0.3;
+                  const isToday = i === 0;
+                  
                   return (
                     <div
                       key={i}
-                      className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-lg transition-colors ${
-                        isAvailable 
+                      className={`flex-shrink-0 w-16 p-2 text-center rounded-lg transition-colors cursor-pointer ${
+                        isToday 
+                          ? 'bg-blue-500 text-white' 
+                          : isAvailable 
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200' 
                           : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-200'
                       }`}
                     >
-                      {dayNumber}
+                      <div className="text-xs font-medium">{dayName}</div>
+                      <div className="text-sm font-bold">{dayNumber}</div>
+                      <div className="text-xs mt-1">
+                        {isToday ? 'Today' : isAvailable ? 'Free' : 'Busy'}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Works Section Only */}
+            {/* Works Section */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
               
-              {/* Filter Tags */}
+              {/* Clickable Filter Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
-                <Badge variant="default" className="bg-gray-600 text-white hover:bg-gray-700">All</Badge>
-                <Badge variant="outline">SMM</Badge>
-                <Badge variant="outline">Graphic</Badge>
-                <Badge variant="outline">UX/UI</Badge>
-                <Badge variant="outline">Photo</Badge>
+                {categories.map((category) => (
+                  <Badge 
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    className={`cursor-pointer transition-colors ${
+                      selectedCategory === category 
+                        ? "bg-blue-600 text-white hover:bg-blue-700" 
+                        : "hover:bg-blue-50 hover:text-blue-600"
+                    }`}
+                    onClick={() => handleTagClick(category)}
+                  >
+                    {category}
+                  </Badge>
+                ))}
               </div>
 
               {/* Portfolio Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {specialist.portfolio.map((work) => (
+                {filteredPortfolio.map((work) => (
                   <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
                     <CardContent className="p-0">
                       <div className="relative" onClick={() => handleWorkClick(work)}>
@@ -273,7 +304,7 @@ const SpecialistProfile = () => {
                           <div className="text-white text-center p-4">
                             <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
                             <div className="text-lg font-bold">{work.title}</div>
-                            <div className="text-xs opacity-75 mt-2">Design Project</div>
+                            <div className="text-xs opacity-75 mt-2">{work.category}</div>
                           </div>
                         </div>
                         <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
@@ -307,6 +338,12 @@ const SpecialistProfile = () => {
                   </Card>
                 ))}
               </div>
+
+              {filteredPortfolio.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">No works found in this category.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -318,6 +355,13 @@ const SpecialistProfile = () => {
             work={selectedWork}
           />
         )}
+
+        <MessageComposer
+          isOpen={isMessageComposerOpen}
+          onClose={() => setIsMessageComposerOpen(false)}
+          recipientName={specialist.name}
+          recipientId={specialist.id}
+        />
 
         <BottomNavigation activeTab="catalog" />
       </div>
