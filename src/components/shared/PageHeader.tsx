@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Settings, Bell, MessageCircle } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useFavorites } from "@/components/shared/FavoritesProvider";
 import { useUserType } from "@/contexts/UserTypeContext";
 import UserTypeSelector from "@/components/shared/UserTypeSelector";

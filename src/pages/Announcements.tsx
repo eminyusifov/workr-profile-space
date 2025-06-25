@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
@@ -200,10 +199,7 @@ const Announcements = () => {
           )}
         </div>
 
-        <JobPostingForm
-          isOpen={showJobForm}
-          onClose={() => setShowJobForm(false)}
-        />
+        {showJobForm && <JobPostingForm />}
 
         <BottomNavigation activeTab="announcements" />
       </div>

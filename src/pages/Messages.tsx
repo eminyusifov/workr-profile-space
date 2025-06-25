@@ -10,15 +10,50 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Plus } from "lucide-react";
 import { useSpecialists } from "@/hooks/useSpecialists";
 
+interface Conversation {
+  id: number;
+  user: {
+    name: string;
+    avatar: string;
+  };
+  lastMessage: string;
+  timestamp: string;
+  unread: number;
+}
+
 const Messages = () => {
-  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
   const [showRecipientSelector, setShowRecipientSelector] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState<any>(null);
   const { specialists } = useSpecialists();
 
-  const handleConversationClick = (conversationId: number) => {
-    setSelectedConversationId(conversationId);
+  // Mock conversations data
+  const conversations: Conversation[] = [
+    {
+      id: 1,
+      user: {
+        name: "Sarah Johnson",
+        avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png"
+      },
+      lastMessage: "Hi! I'm interested in your web design services.",
+      timestamp: "2 min ago",
+      unread: 1
+    },
+    {
+      id: 2,
+      user: {
+        name: "Mike Chen",
+        avatar: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png"
+      },
+      lastMessage: "Thank you for the quote. When can we start?",
+      timestamp: "1 hour ago",
+      unread: 0
+    }
+  ];
+
+  const handleConversationClick = (conversation: Conversation) => {
+    setSelectedConversation(conversation);
   };
 
   const handleNewMessage = () => {
@@ -61,15 +96,18 @@ const Messages = () => {
             </Button>
           </div>
 
-          <ConversationsList onConversationClick={handleConversationClick} />
+          <ConversationsList 
+            conversations={conversations}
+            onConversationClick={handleConversationClick} 
+          />
         </div>
 
         {/* Chat Modal */}
-        {selectedConversationId && (
+        {selectedConversation && (
           <ChatModal
-            isOpen={!!selectedConversationId}
-            onClose={() => setSelectedConversationId(null)}
-            conversationId={selectedConversationId}
+            isOpen={!!selectedConversation}
+            onClose={() => setSelectedConversation(null)}
+            conversation={selectedConversation}
           />
         )}
 
