@@ -13,6 +13,8 @@ interface Specialist {
   avatar: string;
   isNew: boolean;
   languages: string;
+  experience: string;
+  profileImage: string;
 }
 
 export const useSpecialists = () => {
@@ -32,8 +34,10 @@ export const useSpecialists = () => {
       status: "Free",
       price: "800$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: true,
-      languages: "AZ - 5, RU - 4, EN - 4.5"
+      languages: "AZ - 5, RU - 4, EN - 4.5",
+      experience: "5+ years"
     },
     {
       id: 2,
@@ -45,8 +49,10 @@ export const useSpecialists = () => {
       status: "Busy",
       price: "1200$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: true,
-      languages: "AZ - 5, RU - 4, EN - 4"
+      languages: "AZ - 5, RU - 4, EN - 4",
+      experience: "3+ years"
     },
     {
       id: 3,
@@ -58,8 +64,10 @@ export const useSpecialists = () => {
       status: "Free",
       price: "600$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: false,
-      languages: "AZ - 5, RU - 5, EN - 3"
+      languages: "AZ - 5, RU - 5, EN - 3",
+      experience: "4+ years"
     },
     {
       id: 4,
@@ -71,8 +79,10 @@ export const useSpecialists = () => {
       status: "Free",
       price: "1000$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: false,
-      languages: "EN - 5, AR - 5, RU - 3"
+      languages: "EN - 5, AR - 5, RU - 3",
+      experience: "6+ years"
     },
     {
       id: 5,
@@ -84,8 +94,10 @@ export const useSpecialists = () => {
       status: "Busy",
       price: "1500$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: true,
-      languages: "EN - 5, ES - 5, FR - 4"
+      languages: "EN - 5, ES - 5, FR - 4",
+      experience: "7+ years"
     },
     {
       id: 6,
@@ -97,8 +109,10 @@ export const useSpecialists = () => {
       status: "Free",
       price: "700$+",
       avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+      profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
       isNew: false,
-      languages: "EN - 4, ZH - 5, JA - 3"
+      languages: "EN - 4, ZH - 5, JA - 3",
+      experience: "2+ years"
     }
   ];
 
