@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
@@ -11,11 +10,13 @@ import SpecialistGrid from "@/components/shared/SpecialistGrid";
 import LoadingGrid from "@/components/shared/LoadingGrid";
 import { useSpecialists } from "@/hooks/useSpecialists";
 import AdvancedSearch from "@/components/shared/AdvancedSearch";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { specialists, isLoading, error } = useSpecialists();
+  const { user } = useAuth();
 
   const categories = ["All", "Graphic", "UX/UI", "Photo", "SMM", "Animation", "Web Dev", "Mobile"];
   
@@ -61,12 +62,20 @@ const Index = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const rightContent = (
+  const rightContent = user ? (
     <Link to="/profile">
       <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all">
         <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
-        <AvatarFallback>JS</AvatarFallback>
+        <AvatarFallback>
+          {user?.user_metadata?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+        </AvatarFallback>
       </Avatar>
+    </Link>
+  ) : (
+    <Link to="/auth">
+      <Button className="bg-blue-600 hover:bg-blue-700">
+        Sign In
+      </Button>
     </Link>
   );
 

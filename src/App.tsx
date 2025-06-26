@@ -5,10 +5,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserTypeProvider } from "@/contexts/UserTypeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { FavoritesProvider } from "@/components/shared/FavoritesProvider";
 import UserTypeSelector from "@/components/shared/UserTypeSelector";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useUserType } from "@/contexts/UserTypeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import SpecialistProfile from "./pages/SpecialistProfile";
 import Catalog from "./pages/Catalog";
 import Announcements from "./pages/Announcements";
@@ -22,6 +26,27 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const { userType } = useUserType();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<Auth />} />
+      </Routes>
+    );
+  }
 
   if (!userType) {
     return <UserTypeSelector />;
@@ -29,15 +54,47 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/specialist/:id" element={<SpecialistProfile />} />
-      <Route path="/catalog" element={<Catalog />} />
-      <Route path="/announcements" element={<Announcements />} />
-      <Route path="/messages" element={<Messages />} />
-      <Route path="/favorites" element={<Favorites />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/notifications" element={<Notifications />} />
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Index />
+        </ProtectedRoute>
+      } />
+      <Route path="/specialist/:id" element={
+        <ProtectedRoute>
+          <SpecialistProfile />
+        </ProtectedRoute>
+      } />
+      <Route path="/catalog" element={
+        <ProtectedRoute>
+          <Catalog />
+        </ProtectedRoute>
+      } />
+      <Route path="/announcements" element={
+        <ProtectedRoute>
+          <Announcements />
+        </ProtectedRoute>
+      } />
+      <Route path="/messages" element={
+        <ProtectedRoute>
+          <Messages />
+        </ProtectedRoute>
+      } />
+      <Route path="/favorites" element={
+        <ProtectedRoute>
+          <Favorites />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/notifications" element={
+        <ProtectedRoute>
+          <Notifications />
+        </ProtectedRoute>
+      } />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -48,13 +105,15 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <UserTypeProvider>
-        <FavoritesProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </FavoritesProvider>
-      </UserTypeProvider>
+      <AuthProvider>
+        <UserTypeProvider>
+          <FavoritesProvider>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </FavoritesProvider>
+        </UserTypeProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

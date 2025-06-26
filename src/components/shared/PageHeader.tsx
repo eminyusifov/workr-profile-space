@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +8,7 @@ import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useFavorites } from "@/components/shared/FavoritesProvider";
 import { useUserType } from "@/contexts/UserTypeContext";
 import UserTypeSelector from "@/components/shared/UserTypeSelector";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PageHeaderProps {
   title?: string;
@@ -21,6 +21,7 @@ const PageHeader = ({ title, showBackButton = false, showSettings = false, right
   const navigate = useNavigate();
   const { favoritesCount } = useFavorites();
   const { userType, setUserType } = useUserType();
+  const { user, signOut } = useAuth();
   const [showUserTypeSelector, setShowUserTypeSelector] = useState(false);
 
   const handleAvatarClick = () => {
@@ -30,6 +31,11 @@ const PageHeader = ({ title, showBackButton = false, showSettings = false, right
   const handleUserTypeChange = (newUserType: 'customer' | 'contractor') => {
     setUserType(newUserType);
     setShowUserTypeSelector(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
   };
 
   return (
@@ -91,7 +97,9 @@ const PageHeader = ({ title, showBackButton = false, showSettings = false, right
             ) : (
               <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all" onClick={handleAvatarClick}>
                 <AvatarImage src="/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>
+                  {user?.user_metadata?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                </AvatarFallback>
               </Avatar>
             )}
           </div>
@@ -102,10 +110,15 @@ const PageHeader = ({ title, showBackButton = false, showSettings = false, right
       {showUserTypeSelector && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Switch User Type</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Current: <span className="font-medium capitalize">{userType}</span>
-            </p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Account Menu</h2>
+            <div className="space-y-2 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Signed in as: <span className="font-medium">{user?.email}</span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Current mode: <span className="font-medium capitalize">{userType}</span>
+              </p>
+            </div>
             <div className="space-y-3">
               <Button
                 onClick={() => handleUserTypeChange('customer')}
@@ -127,6 +140,9 @@ const PageHeader = ({ title, showBackButton = false, showSettings = false, right
             <div className="flex space-x-3 mt-6">
               <Button variant="outline" onClick={() => setShowUserTypeSelector(false)} className="flex-1">
                 Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleSignOut} className="flex-1">
+                Sign Out
               </Button>
             </div>
           </div>
