@@ -159,7 +159,7 @@ const WorkspaceConfigModal = ({ isOpen, onClose, currentPreferences, onSave }: W
               <div className="flex items-center space-x-2 mb-4">
                 <Checkbox
                   checked={travelWillingness}
-                  onCheckedChange={setTravelWillingness}
+                  onCheckedChange={(checked) => setTravelWillingness(checked === true)}
                 />
                 <Label>Willing to travel for projects</Label>
               </div>
