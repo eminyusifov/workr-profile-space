@@ -7,7 +7,8 @@ import ConversationsList from "@/components/messages/ConversationsList";
 import ChatModal from "@/components/messages/ChatModal";
 import MessageComposer from "@/components/messages/MessageComposer";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MessageCircle, Plus, Search } from "lucide-react";
 import { useSpecialists } from "@/hooks/useSpecialists";
 
 interface Conversation {
@@ -26,6 +27,7 @@ const Messages = () => {
   const [showNewMessage, setShowNewMessage] = useState(false);
   const [showRecipientSelector, setShowRecipientSelector] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState<any>(null);
+  const [recipientSearch, setRecipientSearch] = useState("");
   const { specialists } = useSpecialists();
 
   // Mock conversations data
@@ -65,6 +67,11 @@ const Messages = () => {
     setShowRecipientSelector(false);
     setShowNewMessage(true);
   };
+
+  const filteredSpecialists = specialists.filter(specialist =>
+    specialist.name.toLowerCase().includes(recipientSearch.toLowerCase()) ||
+    specialist.skills.toLowerCase().includes(recipientSearch.toLowerCase())
+  );
 
   return (
     <ThemeProvider>
@@ -111,13 +118,25 @@ const Messages = () => {
           />
         )}
 
-        {/* Recipient Selector Modal */}
+        {/* Recipient Selector Modal with Search */}
         {showRecipientSelector && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Recipient</h2>
-              <div className="space-y-2">
-                {specialists.map((specialist) => (
+              
+              {/* Search Bar */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search contacts..."
+                  value={recipientSearch}
+                  onChange={(e) => setRecipientSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {filteredSpecialists.map((specialist) => (
                   <button
                     key={specialist.id}
                     onClick={() => handleRecipientSelect(specialist)}
@@ -136,10 +155,17 @@ const Messages = () => {
                     </div>
                   </button>
                 ))}
+                {filteredSpecialists.length === 0 && (
+                  <p className="text-center text-gray-500 py-4">No contacts found</p>
+                )}
               </div>
+              
               <Button 
                 variant="outline" 
-                onClick={() => setShowRecipientSelector(false)} 
+                onClick={() => {
+                  setShowRecipientSelector(false);
+                  setRecipientSearch("");
+                }} 
                 className="w-full mt-4"
               >
                 Cancel

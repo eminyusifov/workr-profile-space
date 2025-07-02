@@ -1,172 +1,169 @@
+
 import { useState } from "react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, MapPin, Clock, Eye } from "lucide-react";
-import { useUserType } from "@/contexts/UserTypeContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, MapPin, Clock, DollarSign } from "lucide-react";
 import JobPostingForm from "@/components/announcements/JobPostingForm";
-import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface JobPosting {
   id: number;
   title: string;
-  description: string;
-  budget: string;
-  deadline: string;
+  company: string;
   location: string;
-  category: string;
-  postedBy: string;
-  postedDate: string;
-  applicants: number;
-  status: 'open' | 'closed' | 'in-progress';
+  type: string;
+  salary: string;
+  description: string;
+  requirements: string[];
+  postedAt: string;
+  urgent: boolean;
 }
 
 const Announcements = () => {
-  const { isCustomer } = useUserType();
-  const [showJobForm, setShowJobForm] = useState(false);
-  const [jobPostings] = useState<JobPosting[]>([
+  const [jobPostings, setJobPostings] = useState<JobPosting[]>([
     {
       id: 1,
-      title: "UI/UX Designer needed for Mobile App",
-      description: "Looking for an experienced UI/UX designer to create a modern mobile app interface for our fintech startup. Must have experience with financial applications.",
-      budget: "$2,000 - $5,000",
-      deadline: "2024-02-15",
-      location: "Remote",
-      category: "Design",
-      postedBy: "TechStart Inc.",
-      postedDate: "2024-01-15",
-      applicants: 12,
-      status: 'open'
+      title: "Senior UI/UX Designer",
+      company: "TechCorp Inc.",
+      location: "San Francisco, CA",
+      type: "Full-time",
+      salary: "$80,000 - $120,000",
+      description: "We're looking for a talented UI/UX Designer to join our growing team...",
+      requirements: ["5+ years experience", "Figma expertise", "Portfolio required"],
+      postedAt: "2 hours ago",
+      urgent: true
     },
     {
       id: 2,
-      title: "Frontend Developer for E-commerce Platform",
-      description: "We need a skilled React developer to build the frontend of our new e-commerce platform. Experience with Next.js and TypeScript preferred.",
-      budget: "$3,000 - $8,000",
-      deadline: "2024-03-01",
-      location: "New York, NY",
-      category: "Development",
-      postedBy: "ShopFlow LLC",
-      postedDate: "2024-01-10",
-      applicants: 8,
-      status: 'open'
-    },
-    {
-      id: 3,
-      title: "Brand Identity Design Package",
-      description: "Complete brand identity package needed including logo, color palette, typography, and brand guidelines for a wellness startup.",
-      budget: "$1,500 - $3,000",
-      deadline: "2024-02-28",
+      title: "Freelance Graphic Designer",
+      company: "Creative Agency",
       location: "Remote",
-      category: "Branding",
-      postedBy: "Wellness Co.",
-      postedDate: "2024-01-12",
-      applicants: 15,
-      status: 'in-progress'
+      type: "Contract",
+      salary: "$50-75/hour",
+      description: "Seeking a creative graphic designer for various client projects...",
+      requirements: ["Adobe Creative Suite", "Brand design experience", "Available 20+ hrs/week"],
+      postedAt: "1 day ago",
+      urgent: false
     }
   ]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'in-progress':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'closed':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
+  const [isJobFormOpen, setIsJobFormOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleJobSubmit = (jobData: any) => {
+    const newJob: JobPosting = {
+      id: jobPostings.length + 1,
+      title: jobData.title,
+      company: jobData.company,
+      location: jobData.location,
+      type: jobData.jobType,
+      salary: jobData.budget,
+      description: jobData.description,
+      requirements: jobData.requirements?.split('\n').filter((req: string) => req.trim()) || [],
+      postedAt: "Just now",
+      urgent: jobData.urgent || false
+    };
+
+    setJobPostings(prev => [newJob, ...prev]);
+    setIsJobFormOpen(false);
+    
+    toast({
+      title: "Job Posted Successfully!",
+      description: "Your job posting is now live and visible to all specialists.",
+      duration: 3000,
+    });
   };
 
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <PageHeader title="Job Announcements" showBackButton />
+        <PageHeader title="Job Board" showBackButton />
         
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Job Announcements</h1>
               <p className="text-gray-600 dark:text-gray-300 mt-2">
-                {isCustomer ? "Post jobs and find talented contractors" : "Browse available projects and opportunities"}
+                Discover opportunities and post your own job listings
               </p>
             </div>
-            {isCustomer && (
-              <Button 
-                onClick={() => setShowJobForm(true)}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Post New Job</span>
-              </Button>
-            )}
+            
+            <Dialog open={isJobFormOpen} onOpenChange={setIsJobFormOpen}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4" />
+                  <span>Post New Job</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Post a New Job</DialogTitle>
+                </DialogHeader>
+                <JobPostingForm onSubmit={handleJobSubmit} />
+              </DialogContent>
+            </Dialog>
           </div>
 
-          <div className="grid gap-6">
+          {/* Job Listings */}
+          <div className="space-y-6">
             {jobPostings.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                          {job.title}
-                        </h3>
-                        <Badge className={getStatusColor(job.status)}>
-                          {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-                        {job.description}
+              <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-xl text-gray-900 dark:text-white">
+                        {job.title}
+                        {job.urgent && (
+                          <Badge className="ml-2 bg-red-500 text-white">URGENT</Badge>
+                        )}
+                      </CardTitle>
+                      <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mt-1">
+                        {job.company}
                       </p>
                     </div>
+                    <span className="text-sm text-gray-500">{job.postedAt}</span>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                      <span className="font-medium text-green-600">Budget:</span>
-                      <span>{job.budget}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                      <Calendar className="h-4 w-4" />
-                      <span>Due: {new Date(job.deadline).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="flex flex-wrap items-center gap-4 mb-4">
+                    <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
                       <MapPin className="h-4 w-4" />
                       <span>{job.location}</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                    <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
                       <Clock className="h-4 w-4" />
-                      <span>Posted {new Date(job.postedDate).toLocaleDateString()}</span>
+                      <span>{job.type}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
+                      <DollarSign className="h-4 w-4" />
+                      <span>{job.salary}</span>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        Posted by <span className="font-medium">{job.postedBy}</span>
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {job.applicants} applicant{job.applicants !== 1 ? 's' : ''}
-                      </span>
+                  
+                  <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
+                    {job.description}
+                  </p>
+                  
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">Requirements:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.requirements.map((req, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {req}
+                        </Badge>
+                      ))}
                     </div>
-                    <div className="flex space-x-2">
-                      <Link to={`/announcements/${job.id}`}>
-                        <Button variant="outline" size="sm" className="flex items-center space-x-1">
-                          <Eye className="h-4 w-4" />
-                          <span>View Details</span>
-                        </Button>
-                      </Link>
-                      {!isCustomer && job.status === 'open' && (
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                          Apply Now
-                        </Button>
-                      )}
-                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <Button className="flex-1">Apply Now</Button>
+                    <Button variant="outline">Save Job</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -174,32 +171,12 @@ const Announcements = () => {
           </div>
 
           {jobPostings.length === 0 && (
-            <Card className="p-12 text-center">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <Plus className="h-8 w-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">No job postings yet</h3>
-                <p className="text-gray-600 dark:text-gray-300 max-w-md">
-                  {isCustomer 
-                    ? "Get started by posting your first job to connect with talented contractors."
-                    : "Check back soon for new opportunities and projects."
-                  }
-                </p>
-                {isCustomer && (
-                  <Button 
-                    onClick={() => setShowJobForm(true)}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700"
-                  >
-                    Post Your First Job
-                  </Button>
-                )}
-              </div>
-            </Card>
+            <div className="text-center py-12">
+              <p className="text-gray-600 dark:text-gray-300">No job postings available</p>
+              <p className="text-sm text-gray-500 mt-2">Be the first to post a job opportunity!</p>
+            </div>
           )}
         </div>
-
-        {showJobForm && <JobPostingForm />}
 
         <BottomNavigation activeTab="announcements" />
       </div>

@@ -4,12 +4,16 @@ import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SpecialistGrid from "@/components/shared/SpecialistGrid";
 import { useSpecialists } from "@/hooks/useSpecialists";
+import { useFavorites } from "@/components/shared/FavoritesProvider";
 
 const Favorites = () => {
   const { specialists, isLoading } = useSpecialists();
+  const { favorites } = useFavorites();
   
-  // Mock favorites - in a real app, this would come from user preferences
-  const favoriteSpecialists = specialists.slice(0, 3);
+  // Filter specialists to show only favorites
+  const favoriteSpecialists = specialists.filter(specialist => 
+    favorites.includes(specialist.id)
+  );
 
   return (
     <ThemeProvider>
@@ -29,6 +33,7 @@ const Favorites = () => {
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-600 dark:text-gray-300">No favorites yet</p>
+              <p className="text-sm text-gray-500 mt-2">Add specialists to your favorites by clicking the heart icon on their profiles</p>
             </div>
           )}
         </div>

@@ -1,360 +1,214 @@
 
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Heart, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useParams, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageHeader from "@/components/shared/PageHeader";
 import BottomNavigation from "@/components/shared/BottomNavigation";
-import WorkModal from "@/components/profile/WorkModal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Star, MapPin, MessageCircle, Heart, Bookmark, Share2 } from "lucide-react";
+import { useState } from "react";
 import MessageComposer from "@/components/messages/MessageComposer";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useFavorites } from "@/components/shared/FavoritesProvider";
 
 const SpecialistProfile = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
-  const [selectedWork, setSelectedWork] = useState<any>(null);
-  const [favoriteWorks, setFavoriteWorks] = useState<number[]>([]);
-  const [userRating, setUserRating] = useState(0);
   const [isMessageComposerOpen, setIsMessageComposerOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Mock data - in real app, this would come from API
+  // Mock specialist data - in real app, this would be fetched based on ID
   const specialist = {
-    id: 1,
-    name: "S. Atayev",
-    username: "@g.smith",
-    rating: 4.6,
-    reviews: 56,
-    status: "Free",
-    skills: "SMM, Graphic design, UX/UI, Photo",
-    tools: "Figma, Sketch, Photoshop",
-    languages: "AZ - 5, RU - 4, EN - 4.5",
-    workspace: "Freelance",
-    price: "800$ +",
-    avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+    id: parseInt(id || "1"),
+    name: "Sarah Johnson",
+    title: "Senior UX/UI Designer",
+    location: "San Francisco, CA",
+    profileImage: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+    skills: "UI/UX Design, Figma, Prototyping",
+    rating: 4.9,
+    reviews: 127,
+    hourlyRate: "$85/hour",
+    availability: "Available",
+    description: "Passionate UX/UI designer with 8+ years of experience creating beautiful and functional digital experiences. I specialize in user-centered design and have worked with startups and Fortune 500 companies.",
     portfolio: [
-      { 
-        id: 1, 
-        title: "Book Cover Design", 
-        category: "Graphic",
-        progress: "70%", 
-        likes: 124,
-        description: "A modern book cover design with clean typography and engaging visuals.",
-        tags: ["Design", "Typography", "Print"],
-        author: {
-          name: "S. Atayev",
-          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
-          rating: 4.6
-        }
+      {
+        id: 1,
+        title: "E-commerce Mobile App",
+        image: "/lovable-uploads/fc346fb7-82bf-45e7-94ac-8bcadd2d716b.png",
+        category: "Mobile Design"
       },
-      { 
-        id: 2, 
-        title: "Brand Identity", 
-        category: "UX/UI",
-        progress: "70%", 
-        likes: 89,
-        description: "Complete brand identity package including logo, colors, and guidelines.",
-        tags: ["Branding", "Logo", "Identity"],
-        author: {
-          name: "S. Atayev",
-          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
-          rating: 4.6
-        }
-      },
-      { 
-        id: 3, 
-        title: "UI Design", 
-        category: "Photo",
-        progress: "70%", 
-        likes: 156,
-        description: "Modern UI design for mobile application with intuitive user experience.",
-        tags: ["UI", "Mobile", "UX"],
-        author: {
-          name: "S. Atayev",
-          avatar: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
-          rating: 4.6
-        }
-      },
+      {
+        id: 2,
+        title: "SaaS Dashboard",
+        image: "/lovable-uploads/9002bb8b-998f-4e7c-b2ba-019b5a4342c3.png",
+        category: "Web Design"
+      }
     ]
   };
 
-  const categories = ["All", "SMM", "Graphic", "UX/UI", "Photo"];
-  const filteredPortfolio = selectedCategory === "All" 
-    ? specialist.portfolio 
-    : specialist.portfolio.filter(work => work.category === selectedCategory);
+  if (!specialist) {
+    navigate('/catalog');
+    return null;
+  }
 
-  const handleWriteClick = () => {
-    setIsMessageComposerOpen(true);
-  };
+  const isFavorited = favorites.includes(specialist.id);
 
-  const handleWorkClick = (work: any) => {
-    setSelectedWork(work);
-  };
-
-  const handleToggleFavoriteWork = (workId: number) => {
-    setFavoriteWorks(prev => 
-      prev.includes(workId) 
-        ? prev.filter(id => id !== workId)
-        : [...prev, workId]
-    );
-  };
-
-  const handleStarClick = (rating: number) => {
-    setUserRating(rating);
-    toast({
-      title: "Rating Submitted",
-      description: `You rated this specialist ${rating} stars.`,
-    });
-  };
-
-  const handleHeartClick = () => {
-    const isCurrentlyFavorited = favorites.includes(specialist.id);
-    
-    if (isCurrentlyFavorited) {
+  const handleFavorite = () => {
+    if (isFavorited) {
       removeFromFavorites(specialist.id);
+      toast({
+        title: "Removed from Favorites",
+        description: `${specialist.name} has been removed from your favorites.`,
+      });
     } else {
       addToFavorites(specialist.id);
+      toast({
+        title: "Added to Favorites",
+        description: `${specialist.name} has been added to your favorites.`,
+      });
     }
-    
-    toast({
-      title: isCurrentlyFavorited ? "Removed from Favorites" : "Added to Favorites",
-      description: isCurrentlyFavorited ? "Specialist removed from your favorites." : "Specialist added to your favorites.",
-    });
   };
 
-  const handleTagClick = (category: string) => {
-    setSelectedCategory(category);
-    toast({
-      title: "Filter Applied",
-      description: `Showing ${category === "All" ? "all" : category} works.`,
-    });
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: specialist.name,
+        text: `Check out ${specialist.name}'s profile`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copied",
+        description: "Profile link copied to clipboard.",
+      });
+    }
   };
-
-  const rightContent = (
-    <div className="flex items-center space-x-2">
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`hover:bg-red-50 hover:text-red-600 ${favorites.includes(specialist.id) ? 'text-red-600' : ''}`}
-        onClick={handleHeartClick}
-      >
-        <Heart className={`h-4 w-4 ${favorites.includes(specialist.id) ? 'fill-current' : ''}`} />
-      </Button>
-    </div>
-  );
 
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <PageHeader 
-          title={specialist.name}
-          showBackButton
-          rightContent={rightContent}
-        />
-
+        <PageHeader title="Specialist Profile" showBackButton />
+        
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Profile Header */}
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-lg border-0 p-8 mb-8">
-            <div className="flex items-start space-x-6 mb-6">
-              <Avatar className="h-20 w-20 ring-4 ring-white shadow-lg">
-                <AvatarImage src={specialist.avatar} />
-                <AvatarFallback>{specialist.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{specialist.name}</h2>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-full">
-                        i
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Specialist Information</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold">Skills</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">{specialist.skills}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold">Tools</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">{specialist.tools}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold">Languages</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">{specialist.languages}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold">Workspace</h4>
-                          <Badge variant="secondary">{specialist.workspace}</Badge>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{specialist.username}</p>
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center space-x-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-5 w-5 cursor-pointer transition-colors ${
-                          i < Math.floor(specialist.rating)
-                            ? "fill-blue-500 text-blue-500"
-                            : userRating > i
-                            ? "fill-yellow-500 text-yellow-500"
-                            : "text-gray-300 hover:text-yellow-400"
-                        }`}
-                        onClick={() => handleStarClick(i + 1)}
-                      />
-                    ))}
-                    <span className="text-sm font-medium ml-2">
-                      {specialist.rating} ({specialist.reviews} reviews)
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      specialist.status === "Free" ? "bg-green-500" : "bg-yellow-500"
-                    }`} />
-                    <span className="text-sm text-gray-600 dark:text-gray-300">{specialist.status}</span>
-                    <span className="text-lg font-bold text-gray-900 dark:text-white ml-4">{specialist.price}</span>
-                  </div>
-                  <Button onClick={handleWriteClick} className="bg-blue-600 hover:bg-blue-700">
-                    <Send className="h-4 w-4 mr-2" />
-                    Write
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Prettier Calendar in one line */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Availability (Next 14 Days)</h3>
-              <div className="flex space-x-1 overflow-x-auto pb-2">
-                {Array.from({ length: 14 }, (_, i) => {
-                  const date = new Date();
-                  date.setDate(date.getDate() + i);
-                  const dayNumber = date.getDate();
-                  const dayName = date.toLocaleDateString('en', { weekday: 'short' });
-                  const isAvailable = Math.random() > 0.3;
-                  const isToday = i === 0;
-                  
-                  return (
-                    <div
-                      key={i}
-                      className={`flex-shrink-0 w-16 p-2 text-center rounded-lg transition-colors cursor-pointer ${
-                        isToday 
-                          ? 'bg-blue-500 text-white' 
-                          : isAvailable 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200' 
-                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-200'
-                      }`}
-                    >
-                      <div className="text-xs font-medium">{dayName}</div>
-                      <div className="text-sm font-bold">{dayNumber}</div>
-                      <div className="text-xs mt-1">
-                        {isToday ? 'Today' : isAvailable ? 'Free' : 'Busy'}
-                      </div>
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={specialist.profileImage} />
+                  <AvatarFallback>{specialist.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {specialist.name}
+                  </h1>
+                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-2">
+                    {specialist.title}
+                  </p>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="flex items-center space-x-1">
+                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {specialist.location}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Works Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Portfolio</h3>
-              
-              {/* Clickable Filter Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {categories.map((category) => (
-                  <Badge 
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    className={`cursor-pointer transition-colors ${
-                      selectedCategory === category 
-                        ? "bg-blue-600 text-white hover:bg-blue-700" 
-                        : "hover:bg-blue-50 hover:text-blue-600"
-                    }`}
-                    onClick={() => handleTagClick(category)}
-                  >
-                    {category}
-                  </Badge>
-                ))}
-              </div>
-
-              {/* Portfolio Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredPortfolio.map((work) => (
-                  <Card key={work.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
-                    <CardContent className="p-0">
-                      <div className="relative" onClick={() => handleWorkClick(work)}>
-                        <div className="aspect-[4/5] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                          <div className="text-white text-center p-4">
-                            <div className="text-sm opacity-90 mb-2">PORTFOLIO</div>
-                            <div className="text-lg font-bold">{work.title}</div>
-                            <div className="text-xs opacity-75 mt-2">{work.category}</div>
-                          </div>
-                        </div>
-                        <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                          {work.progress} complete
-                        </div>
-                        <div className="absolute top-2 right-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleFavoriteWork(work.id);
-                            }}
-                          >
-                            <Heart className={`h-4 w-4 ${favoriteWorks.includes(work.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-medium text-gray-900 dark:text-white">{work.title}</h4>
-                        <div className="flex items-center justify-between mt-2">
-                          <Badge variant="outline">{work.category}</Badge>
-                          <div className="flex items-center space-x-1 text-gray-500">
-                            <Heart className="h-4 w-4" />
-                            <span className="text-sm">{work.likes}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {filteredPortfolio.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-gray-400">No works found in this category.</p>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {specialist.rating} ({specialist.reviews} reviews)
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {specialist.skills.split(", ").map((skill) => (
+                      <Badge key={skill} variant="secondary">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {specialist.hourlyRate}
+                    </span>
+                    <Badge className="bg-green-100 text-green-800">
+                      {specialist.availability}
+                    </Badge>
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+                
+                <div className="flex flex-col space-y-2">
+                  <Button onClick={() => setIsMessageComposerOpen(true)}>
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message
+                  </Button>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleFavorite}
+                      className={isFavorited ? "text-red-500 border-red-200" : ""}
+                    >
+                      <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Bookmark className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleShare}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-        {selectedWork && (
-          <WorkModal
-            isOpen={!!selectedWork}
-            onClose={() => setSelectedWork(null)}
-            work={selectedWork}
-          />
-        )}
+          {/* About Section */}
+          <Card className="mb-8">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                About
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {specialist.description}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Portfolio Section */}
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                Portfolio
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {specialist.portfolio.map((item) => (
+                  <div key={item.id} className="group cursor-pointer">
+                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-3">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <h3 className="font-medium text-gray-900 dark:text-white mb-1">
+                      {item.title}
+                    </h3>
+                    <Badge variant="outline" className="text-xs">
+                      {item.category}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <MessageComposer
           isOpen={isMessageComposerOpen}

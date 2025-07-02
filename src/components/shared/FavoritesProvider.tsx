@@ -14,7 +14,9 @@ export const FavoritesProvider = ({ children }: { children: React.ReactNode }) =
   const [favorites, setFavorites] = useState<number[]>([]);
 
   const addToFavorites = (id: number) => {
-    setFavorites(prev => [...prev, id]);
+    if (!favorites.includes(id)) {
+      setFavorites(prev => [...prev, id]);
+    }
   };
 
   const removeFromFavorites = (id: number) => {

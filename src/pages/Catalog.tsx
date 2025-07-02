@@ -6,9 +6,14 @@ import BottomNavigation from "@/components/shared/BottomNavigation";
 import SuppliersGrid from "@/components/catalog/SuppliersGrid";
 import FilterSection from "@/components/catalog/FilterSection";
 import EnhancedSearch from "@/components/shared/EnhancedSearch";
+import SpecialistGrid from "@/components/shared/SpecialistGrid";
+import { Button } from "@/components/ui/button";
+import { useSpecialists } from "@/hooks/useSpecialists";
+import LoadingGrid from "@/components/shared/LoadingGrid";
 
 const Catalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"specialists" | "companies" | "leaderboard">("specialists");
   const [filters, setFilters] = useState({
     category: "All",
     priceRange: [0, 5000] as [number, number],
@@ -16,6 +21,8 @@ const Catalog = () => {
     location: "",
     availability: "all"
   });
+
+  const { specialists, isLoading } = useSpecialists();
 
   // Mock suppliers data
   const suppliers = [
@@ -69,6 +76,17 @@ const Catalog = () => {
     return matchesSearch && matchesCategory && matchesRating && matchesLocation;
   });
 
+  const filteredSpecialists = specialists.filter(specialist => {
+    const matchesSearch = specialist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         specialist.skills.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = filters.category === "All" || 
+                           specialist.skills.toLowerCase().includes(filters.category.toLowerCase());
+    return matchesSearch && matchesCategory;
+  });
+
+  // Leaderboard - sort specialists by rating
+  const leaderboardSpecialists = [...filteredSpecialists].sort((a, b) => b.rating - a.rating);
+
   const handleFilterChange = (newFilters: typeof filters) => {
     setFilters(newFilters);
   };
@@ -83,11 +101,33 @@ const Catalog = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Find the Perfect Service Provider</h1>
             <EnhancedSearch
-              placeholder="Search suppliers, services, or skills..."
+              placeholder="Search specialists, companies, or skills..."
               value={searchQuery}
               onChange={setSearchQuery}
               showTrending={true}
             />
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex space-x-2 mb-6">
+            <Button
+              variant={viewMode === "specialists" ? "default" : "outline"}
+              onClick={() => setViewMode("specialists")}
+            >
+              Specialists
+            </Button>
+            <Button
+              variant={viewMode === "companies" ? "default" : "outline"}
+              onClick={() => setViewMode("companies")}
+            >
+              Companies
+            </Button>
+            <Button
+              variant={viewMode === "leaderboard" ? "default" : "outline"}
+              onClick={() => setViewMode("leaderboard")}
+            >
+              Leaderboard
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -103,11 +143,33 @@ const Catalog = () => {
             <div className="lg:col-span-3">
               <div className="flex items-center justify-between mb-6">
                 <p className="text-gray-600 dark:text-gray-300">
-                  {filteredSuppliers.length} suppliers found
+                  {viewMode === "specialists" && `${filteredSpecialists.length} specialists found`}
+                  {viewMode === "companies" && `${filteredSuppliers.length} companies found`}
+                  {viewMode === "leaderboard" && `Top ${leaderboardSpecialists.length} specialists`}
                 </p>
               </div>
               
-              <SuppliersGrid suppliers={filteredSuppliers} />
+              {isLoading ? (
+                <LoadingGrid count={6} title="Loading..." />
+              ) : (
+                <>
+                  {viewMode === "specialists" && (
+                    <SpecialistGrid 
+                      specialists={filteredSpecialists}
+                      title=""
+                    />
+                  )}
+                  {viewMode === "companies" && (
+                    <SuppliersGrid suppliers={filteredSuppliers} />
+                  )}
+                  {viewMode === "leaderboard" && (
+                    <SpecialistGrid 
+                      specialists={leaderboardSpecialists}
+                      title="🏆 Top Rated Specialists"
+                    />
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
